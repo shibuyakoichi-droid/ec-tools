@@ -426,6 +426,49 @@ function resetSnapshot2026() {
   const sheet = ss.getSheetByName('Snapshot');
   const last  = sheet.getLastRow();
   if (last > 1) sheet.getRange(2, 1, last - 1, 3).clearContent();
-  // 既存データをBL-KN / BL-MOM / TBL-* / KBL-* に移行してください
   Logger.log('Snapshot クリア完了。既存在庫データを新SKUコードで再登録してください。');
+}
+
+// ============================================================
+// migrateSnapshot2026 — 旧SKUコードを新コードに一括書き換え
+// GASエディタから1回だけ実行してください
+// ============================================================
+
+function migrateSnapshot2026() {
+  const ss    = SpreadsheetApp.openById(SS_ID);
+  const sheet = ss.getSheetByName('Snapshot');
+  if (!sheet) { Logger.log('❌ Snapshotシートが見つかりません'); return; }
+
+  const codeMap = {
+    'TBL-KN':  'BL-KN',
+    'TBL-MOM': 'BL-MOM',
+    'TBL-CG':  'KBL-CG',
+    'TBL-GR':  'KBL-GR',
+    'TBL-DP':  'KBL-DP',
+    'TBL-OL':  'KBL-OL',
+    'TBL-MG':  'KBL-MG',
+    'TBL-MC':  'KBL-MC',
+  };
+
+  const data = sheet.getDataRange().getValues();
+  let changed = 0, deleted = 0;
+
+  // 後ろから処理（行削除があるためインデックスがずれないよう）
+  for (let i = data.length - 1; i >= 1; i--) {
+    const code = String(data[i][0] || '');
+    if (!code) continue;
+
+    if (code.startsWith('TBL-WSO-')) {
+      sheet.deleteRow(i + 1);
+      deleted++;
+      continue;
+    }
+
+    if (codeMap[code]) {
+      sheet.getRange(i + 1, 1).setValue(codeMap[code]);
+      changed++;
+    }
+  }
+
+  Logger.log('✅ 移行完了: ' + changed + '件書き換え / ' + deleted + '件削除');
 }
