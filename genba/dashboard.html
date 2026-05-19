@@ -6,15 +6,10 @@
 <title>工程ダッシュボード — SOWAN</title>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#f5f1ea;--card:#fffdf8;--ink:#1a1a1a;--soft:#6b6357;
-  --line:#d4cdbf;--acc:#a64635;--acc-s:#c9826f;--acc-bg:#fdf3ee;
-  --ok:#5a7a3e;--ok-bg:#f4f8ec;--warn:#b8842a;--warn-bg:#fcf6e8;
-}
+:root{--bg:#f5f1ea;--card:#fffdf8;--ink:#1a1a1a;--soft:#6b6357;--line:#d4cdbf;--acc:#a64635;--acc-s:#c9826f;--acc-bg:#fdf3ee;--ok:#5a7a3e;--ok-bg:#f4f8ec;--warn:#b8842a;--warn-bg:#fcf6e8;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{font-family:"Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:14px}
 
-/* ── ヘッダー ── */
 .header{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
 .header-main{padding:14px 16px 8px;display:flex;align-items:center;justify-content:space-between}
 .header-brand{font-family:"Shippori Mincho",serif;font-size:17px;font-weight:700}
@@ -29,97 +24,78 @@ html,body{font-family:"Noto Sans JP",sans-serif;background:var(--bg);color:var(-
 .header-banner.ng{background:var(--acc-bg);color:var(--acc)}
 .banner-link{color:inherit;text-decoration:underline;background:none;border:none;padding:0 2px;font-size:inherit;font-weight:inherit;font-family:inherit;cursor:pointer}
 
-/* ── ダッシュボードタブ ── */
-.dash-tabs{display:flex;gap:6px;padding:14px 16px 0;border-bottom:1px solid var(--line);background:var(--card);overflow-x:auto;scrollbar-width:none}
-.dash-tabs::-webkit-scrollbar{display:none}
-.dtab{flex-shrink:0;padding:8px 16px;font-size:12px;font-weight:700;background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;color:var(--soft);transition:all .15s}
-.dtab.active{color:var(--acc);border-bottom-color:var(--acc)}
-.dpanel{display:none}
-.dpanel.active{display:block}
+/* ── 工場タブ ── */
+.factory-tabs{display:flex;gap:0;background:var(--card);border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.factory-tabs::-webkit-scrollbar{display:none}
+.ftab{flex:1;min-width:80px;padding:12px 8px;font-size:12px;font-weight:700;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit;color:var(--soft);text-align:center;transition:all .15s;white-space:nowrap}
+.ftab.active{color:#1a4a2e;border-bottom-color:#1a4a2e}
 
 /* ── コンテンツ ── */
-.content{padding:16px;max-width:1100px;margin:0 auto;padding-bottom:48px}
+.content{padding:16px;max-width:1200px;margin:0 auto;padding-bottom:60px}
+@media(min-width:768px){.content{padding:20px 24px 60px}}
+.sec{font-family:"Shippori Mincho",serif;font-size:12px;font-weight:700;color:var(--soft);letter-spacing:.08em;margin:18px 0 10px;text-transform:uppercase}
+.dpanel{display:none}.dpanel.active{display:block}
 
-/* PC: 2カラムレイアウト */
-@media(min-width:768px){
-  .content{padding:20px 24px 60px}
-  .pc-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
-  .pc-full{grid-column:1/-1}
-}
-
-.sec{font-family:"Shippori Mincho",serif;font-size:12px;font-weight:700;color:var(--soft);letter-spacing:.08em;margin:20px 0 10px;text-transform:uppercase}
-
-/* ── 商品タブ ── */
-.ptabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;margin-bottom:16px}
-.ptabs::-webkit-scrollbar{display:none}
-.ptab{padding:7px 14px;font-size:12px;font-weight:700;background:var(--card);border:1px solid var(--line);border-radius:20px;cursor:pointer;font-family:inherit;color:var(--soft);white-space:nowrap;flex-shrink:0}
-.ptab.active{background:var(--acc);border-color:var(--acc);color:#fff}
-
-/* ── パイプラインレース ── */
+/* ── PIPELINE RACE ── */
 .race{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px}
 @media(min-width:768px){.race{grid-template-columns:repeat(5,1fr)}}
-.race-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 8px;text-align:center}
+.race-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center}
 .race-card.ok{background:var(--ok-bg);border-color:var(--ok)}
 .race-card.ng{background:var(--acc-bg);border-color:var(--acc-s)}
-.race-lbl{font-size:10px;color:var(--soft);margin-bottom:6px;line-height:1.4}
-.race-val{font-family:"JetBrains Mono",monospace;font-size:22px;font-weight:700;line-height:1}
-.race-card.ok .race-val{color:var(--ok)}
-.race-card.ng .race-val{color:var(--acc)}
-.race-unit{font-size:9px;color:var(--soft);margin-top:4px;font-family:"JetBrains Mono",monospace}
+.race-lbl{font-size:10px;color:var(--soft);margin-bottom:5px;line-height:1.4}
+.race-val{font-family:"JetBrains Mono",monospace;font-size:20px;font-weight:700;line-height:1}
+.race-card.ok .race-val{color:var(--ok)}.race-card.ng .race-val{color:var(--acc)}
+.race-unit{font-size:9px;color:var(--soft);margin-top:3px;font-family:"JetBrains Mono",monospace}
 
-/* ── サプライチェーン ── */
+/* ── SUPPLY CHAIN ── */
 .chain-wrap{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 14px;overflow-x:auto;scrollbar-width:thin}
 .chain{display:flex;align-items:center;min-width:max-content}
-.cn{display:flex;flex-direction:column;align-items:center;min-width:60px}
-.cn-name{font-size:9px;color:var(--soft);margin-bottom:5px;white-space:nowrap;text-align:center}
-.cn-badge{width:46px;height:46px;border-radius:50%;background:var(--bg);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;text-align:center;line-height:1.2}
+.cn{display:flex;flex-direction:column;align-items:center;min-width:58px}
+.cn-name{font-size:9px;color:var(--soft);margin-bottom:4px;white-space:nowrap;text-align:center}
+.cn-badge{width:44px;height:44px;border-radius:50%;background:var(--bg);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;text-align:center;line-height:1.2}
 .cn-badge.has{background:var(--acc-bg);border-color:var(--acc-s);color:var(--acc)}
-.cn-sub{font-size:9px;color:var(--soft);margin-top:4px;font-family:"JetBrains Mono",monospace;min-height:12px;text-align:center}
-.chain-ar{color:var(--line);font-size:14px;padding:0 2px;flex-shrink:0;margin-bottom:16px}
+.cn-sub{font-size:9px;color:var(--soft);margin-top:3px;font-family:"JetBrains Mono",monospace;min-height:12px;text-align:center}
+.chain-ar{color:var(--line);font-size:14px;padding:0 2px;flex-shrink:0;margin-bottom:15px}
 
-/* ── SKUマトリクス ── */
-.matrix-wrap{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+/* ── SKU MATRIX ── */
+.type-section{margin-bottom:20px}
+.type-header{font-size:13px;font-weight:700;color:var(--soft);padding:8px 14px;background:var(--bg);border:1px solid var(--line);border-radius:8px 8px 0 0;border-bottom:none}
+.matrix-wrap{background:var(--card);border:1px solid var(--line);border-radius:0 0 12px 12px;overflow:hidden;margin-bottom:0}
 .matrix-scroll{overflow-x:auto}
-table.matrix{width:100%;border-collapse:collapse;font-size:12px;min-width:920px}
+table.matrix{width:100%;border-collapse:collapse;font-size:12px;min-width:800px}
 table.matrix th{background:var(--bg);padding:8px 6px;text-align:center;font-size:10px;color:var(--soft);font-weight:700;border-bottom:1px solid var(--line);white-space:nowrap;line-height:1.4}
 table.matrix th:first-child{text-align:left;padding-left:14px}
-table.matrix td{padding:10px 6px;text-align:center;border-bottom:1px solid var(--line);font-family:"JetBrains Mono",monospace}
+table.matrix td{padding:9px 6px;text-align:center;border-bottom:1px solid var(--line);font-family:"JetBrains Mono",monospace}
 table.matrix td:first-child{text-align:left;padding-left:14px;font-family:"Noto Sans JP",sans-serif;font-size:11px;font-weight:700;white-space:nowrap}
 table.matrix tr:last-child td{border-bottom:none}
 table.matrix tr.ng-row td{background:var(--acc-bg)}
 table.matrix tr.ng-row td:first-child{color:var(--acc)}
-.diff-ok{color:var(--ok);font-weight:700}
-.diff-ng{color:var(--acc);font-weight:700}
-.diff-zero{color:var(--soft)}
+.diff-ok{color:var(--ok);font-weight:700}.diff-ng{color:var(--acc);font-weight:700}.diff-zero{color:var(--soft)}
 .col-total{background:rgba(90,122,62,.06);font-weight:700;color:var(--ok)}
 .ng-row .col-total{background:rgba(166,70,53,.08);color:var(--acc)}
 .sub-kg{display:block;font-size:9px;color:var(--soft)}
 .sku-name{display:block;font-weight:400;color:var(--soft);font-size:10px;margin-top:1px}
 .stock-badge{display:inline-block;font-size:10px;font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--ok);background:var(--ok-bg);border:1px solid rgba(90,122,62,.2);border-radius:4px;padding:1px 5px;margin-left:4px}
 .shared-tag{display:inline-block;font-size:9px;background:var(--acc-bg);color:var(--acc);border:1px solid var(--acc-s);border-radius:3px;padding:0 4px;margin-left:3px}
-tr[id]{scroll-margin-top:160px}
+tr[id]{scroll-margin-top:180px}
 
-/* ── ログパネル ── */
+/* ── ログ ── */
+.log-filter{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.log-filter select{padding:7px 10px;font-size:12px;background:var(--card);border:1px solid var(--line);border-radius:7px;font-family:inherit;color:var(--ink);appearance:none;-webkit-appearance:none;min-width:120px}
 .log-list{display:flex;flex-direction:column;gap:8px}
 .log-item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
 .log-time{font-size:10px;color:var(--soft);font-family:"JetBrains Mono",monospace;margin-bottom:4px}
 .log-mode-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-bottom:4px}
-.mc-move{background:#eef4fc;color:#3d6fa8}
-.mc-in{background:var(--ok-bg);color:var(--ok)}
-.mc-ship{background:var(--warn-bg);color:var(--warn)}
-.mc-fix{background:#f5f0ff;color:#6b2fa0}
+.mc-move{background:#eef4fc;color:#3d6fa8}.mc-in{background:var(--ok-bg);color:var(--ok)}
+.mc-ship{background:var(--warn-bg);color:var(--warn)}.mc-fix{background:#f5f0ff;color:#6b2fa0}
 .mc-other{background:var(--bg);color:var(--soft)}
 .log-body{color:var(--ink);line-height:1.6;font-size:12px}
 .log-footer{font-size:10px;color:var(--soft);margin-top:3px}
-.log-filter{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.log-filter select{padding:7px 10px;font-size:12px;background:var(--card);border:1px solid var(--line);border-radius:7px;font-family:inherit;color:var(--ink);appearance:none;-webkit-appearance:none;min-width:120px}
 .log-empty{text-align:center;padding:32px;color:var(--soft);font-size:13px}
 
-/* ── ローディング ── */
 .loading{display:none;position:fixed;inset:0;background:rgba(245,241,234,.85);align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:50;font-size:13px;color:var(--soft)}
 .loading.show{display:flex}
 .spinner{width:28px;height:28px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
-
 .bottom-nav{margin-top:28px;text-align:center}
 .bottom-link{font-size:12px;color:var(--soft);text-decoration:none}
 .bottom-link:hover{color:var(--acc)}
@@ -131,7 +107,7 @@ tr[id]{scroll-margin-top:160px}
   <div class="header-main">
     <div>
       <div class="header-brand">SOWAN 工程管理</div>
-      <div class="header-sub">PIPELINE DASHBOARD</div>
+      <div class="header-sub" id="headerSub">PIPELINE DASHBOARD</div>
     </div>
     <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
       <span class="refresh-icon">↻</span>&nbsp;更新
@@ -141,83 +117,20 @@ tr[id]{scroll-margin-top:160px}
   <div class="header-banner" id="bannerInHeader" style="display:none"></div>
 </div>
 
-<!-- ダッシュボードタブ -->
-<div class="dash-tabs">
-  <button class="dtab active" onclick="switchDTab('overview')">📊 概要</button>
-  <button class="dtab"        onclick="switchDTab('log')">📋 操作ログ</button>
+<!-- 工場タブ -->
+<div class="factory-tabs">
+  <button class="ftab active" data-factory="kamiki"   onclick="switchFactory('kamiki')">🏭 神木</button>
+  <button class="ftab"        data-factory="nishio"   onclick="switchFactory('nishio')">🏭 西尾</button>
+  <button class="ftab"        data-factory="hiramoto" onclick="switchFactory('hiramoto')">🏭 平本靴下</button>
+  <button class="ftab"        data-factory="log"      onclick="switchFactory('log')">📋 ログ</button>
 </div>
 
 <div class="content">
 
-  <!-- 概要パネル -->
-  <div class="dpanel active" id="dpanel-overview">
-
-    <div class="sec">商品</div>
-    <div class="ptabs" id="ptabs"></div>
-
-    <div class="sec">PIPELINE RACE</div>
-    <div class="race">
-      <div class="race-card" id="raceBacklog">
-        <div class="race-lbl">出 荷 残</div>
-        <div class="race-val" id="valBacklog">—</div>
-        <div class="race-unit">個</div>
-      </div>
-      <div class="race-card" id="racePipeline">
-        <div class="race-lbl">工 程 合 計</div>
-        <div class="race-val" id="valPipeline">—</div>
-        <div class="race-unit">個換算</div>
-      </div>
-      <div class="race-card" id="raceDiff">
-        <div class="race-lbl">差 分</div>
-        <div class="race-val" id="valDiff">—</div>
-        <div class="race-unit">＋不足 ／ −余裕</div>
-      </div>
-      <div class="race-card" id="raceTarget">
-        <div class="race-lbl">目 標 合 計</div>
-        <div class="race-val" id="valTarget">—</div>
-        <div class="race-unit">個</div>
-      </div>
-      <div class="race-card" id="raceTargetDiff">
-        <div class="race-lbl">目 標 差 分</div>
-        <div class="race-val" id="valTargetDiff">—</div>
-        <div class="race-unit">＋不足 ／ −超過</div>
-      </div>
-    </div>
-
-    <div class="sec">SUPPLY CHAIN</div>
-    <div class="chain-wrap">
-      <div class="chain" id="chain"></div>
-    </div>
-
-    <div class="sec">SKU MATRIX</div>
-    <div class="matrix-wrap">
-      <div class="matrix-scroll">
-        <table class="matrix">
-          <thead>
-            <tr>
-              <th>SKU / 実在庫</th>
-              <th>工場合計<br>(kg/個換算)</th>
-              <th>エ社<br>(未縫製)</th>
-              <th>池本さん</th>
-              <th>刑務所</th>
-              <th>エ社<br>(加工前)</th>
-              <th>洗濯</th>
-              <th>内職</th>
-              <th>実在庫</th>
-              <th>工程合計<br>(個換算)</th>
-              <th>差分</th>
-              <th>目標数</th>
-            </tr>
-          </thead>
-          <tbody id="matrixBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="bottom-nav">
-      <a href="./index.html" class="bottom-link">← 入力フォームに戻る</a>
-    </div>
-  </div>
+  <!-- 各工場パネル -->
+  <div class="dpanel active" id="dpanel-kamiki"></div>
+  <div class="dpanel"        id="dpanel-nishio"></div>
+  <div class="dpanel"        id="dpanel-hiramoto"></div>
 
   <!-- ログパネル -->
   <div class="dpanel" id="dpanel-log">
@@ -243,66 +156,73 @@ tr[id]{scroll-margin-top:160px}
     </div>
   </div>
 
+  <div class="bottom-nav">
+    <a href="./index.html" class="bottom-link">← 入力フォームに戻る</a>
+  </div>
 </div>
 
 <div class="loading" id="loading">
-  <div class="spinner"></div>
-  <span>データ取得中...</span>
+  <div class="spinner"></div><span>データ取得中...</span>
 </div>
 
 <script>
 const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbx9OJmADgkcN_HzcM_GQ7SoH573SFx7rdjj_a8-_Ew3gBCpa66QfvmVD3DUhJBGMcDt/exec';
 const KG_PER_PCS  = 0.030;
 const REFRESH_MS  = 5 * 60 * 1000;
-const FACTORIES   = ['神木さん','西尾さん','平本靴下さん'];
+
+const FACTORIES_CONFIG = [
+  { code:'kamiki',   label:'神木',     suffix:'KMK', stage:'神木さん' },
+  { code:'nishio',   label:'西尾',     suffix:'WSO', stage:'西尾さん' },
+  { code:'hiramoto', label:'平本靴下', suffix:'HRT', stage:'平本靴下さん' },
+];
+const TYPES_CONFIG = [
+  { code:'tubu',   name:'つぶつぶ' },
+  { code:'kusumi', name:'くすみ' },
+  { code:'linen',  name:'リネン' },
+  { code:'usude',  name:'薄手' },
+];
+const BASE_SKUS = {
+  shared: [['BL-KN','キナリ'],['BL-MOM','杢オートミール']],
+  tubu:   [['TBL-KNT','キナリツブ'],['TBL-SRT','シロツブ'],['TBL-CNP','カラーネップ']],
+  kusumi: [['KBL-DP','ダスティピンク'],['KBL-GR','グレー'],['KBL-OL','オリーブ'],['KBL-CG','チャコールグレー'],['KBL-MC','杢チャコール'],['KBL-MG','杢グレー']],
+  linen:  [['LBL-IV','くすみアイボリー'],['LBL-MP','ミルキーピンク'],['LBL-GR','グレー'],['LBL-MB','ミルクベージュ'],['LBL-MT','ミント']],
+  usude:  [['UBL-KN','キナリ'],['UBL-OAT','オートミール'],['UBL-PP','ベビーピンク'],['UBL-BB','ベビーブルー'],['UBL-SG','シルバーグレー'],['UBL-CG','チャコールグレー'],['UBL-WH','ホワイト']],
+};
 const PROC_STAGES = ['エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫'];
 
-let data           = null;
+let masterData     = { snapshot:{} };
 let allLogs        = [];
-let currentProduct = null;
-let currentDTab    = 'overview';
+let currentFactory = 'kamiki';
 let refreshTimer   = null;
 
-// フォールバックデータ
-const MOCK = {
-  products: [
-    { code:'babyleg-tubu',  name:'つぶつぶベビーレッグ' },
-    { code:'babyleg-kusumi',name:'くすみベビーレッグ' },
-    { code:'babyleg-linen', name:'リネンベビーレッグ' },
-    { code:'babyleg-usude', name:'薄手ベビーレッグ' },
-  ],
-  skus:[
-    { product:'babyleg-tubu', code:'BL-KN',  name:'キナリ',       shared:true  },
-    { product:'babyleg-tubu', code:'BL-MOM', name:'杢オートミール', shared:true },
-    { product:'babyleg-tubu', code:'TBL-KNT', name:'キナリツブ'  },
-    { product:'babyleg-tubu', code:'TBL-SRT', name:'シロツブ'    },
-    { product:'babyleg-tubu', code:'TBL-CNP', name:'カラーネップ'},
-  ],
-  snapshot:{}
-};
+function getSkusForFactoryType(fConf, typeCode) {
+  const sfx  = '-' + fConf.suffix;
+  const skus = [];
+  if (['tubu','kusumi'].includes(typeCode)) {
+    BASE_SKUS.shared.forEach(b => skus.push({ code:b[0]+sfx, name:b[1], shared:true }));
+  }
+  (BASE_SKUS[typeCode]||[]).forEach(b => skus.push({ code:b[0]+sfx, name:b[1], shared:false }));
+  return skus;
+}
 
-// ── 計算ヘルパー ──
 function getProcessTotal(snap) {
   if (snap.processTotal != null) return snap.processTotal;
-  const factKg  = FACTORIES.reduce((s, f) => s + (snap[f] || 0), 0);
-  const factPcs = Math.round(factKg / KG_PER_PCS);
-  const stagePcs = PROC_STAGES.reduce((s, st) => s + (snap[st] || 0), 0);
-  return factPcs + stagePcs;
+  const factKg  = FACTORIES_CONFIG.reduce((s,f)=>s+(snap[f.stage]||0),0);
+  return Math.round(factKg/KG_PER_PCS) + PROC_STAGES.reduce((s,st)=>s+(snap[st]||0),0);
 }
+function getDiff(snap){ return snap.diff != null ? snap.diff : (snap.backlog||0)-getProcessTotal(snap); }
 
-function getDiff(snap) {
-  if (snap.diff != null) return snap.diff;
-  return (snap.backlog || 0) - getProcessTotal(snap);
-}
-
-// ── ダッシュボードタブ切替 ──
-function switchDTab(tab) {
-  currentDTab = tab;
-  document.querySelectorAll('.dtab').forEach((t, i) =>
-    t.classList.toggle('active', ['overview','log'][i] === tab));
+// ── 工場切替 ──
+function switchFactory(code) {
+  currentFactory = code;
+  document.querySelectorAll('.ftab').forEach(t => t.classList.toggle('active', t.dataset.factory === code));
   document.querySelectorAll('.dpanel').forEach(p => p.classList.remove('active'));
-  document.getElementById('dpanel-' + tab).classList.add('active');
-  if (tab === 'log' && allLogs.length === 0) loadLogs();
+  document.getElementById('dpanel-' + code).classList.add('active');
+  document.getElementById('headerSub').textContent =
+    code === 'log' ? 'OPERATION LOG' :
+    (FACTORIES_CONFIG.find(f=>f.code===code)?.label||'') + ' — PIPELINE';
+  document.getElementById('bannerInHeader').style.display = code === 'log' ? 'none' : '';
+  if (code === 'log') loadLogs();
 }
 
 // ── データ取得 ──
@@ -310,33 +230,180 @@ async function loadData() {
   document.getElementById('refreshBtn').classList.add('refreshing');
   document.getElementById('loading').classList.add('show');
   try {
-    const res = await fetch(GAS_API_URL + '?action=getMasters');
-    data = await res.json();
-    if (data.skus) {
-      data.skus = data.skus.map(s => ({
-        ...s,
-        shared: s.shared === true || s.shared === 'TRUE',
-        isSet:  s.isSet  === true || s.isSet  === 'TRUE',
-        components: s.components
-          ? (Array.isArray(s.components) ? s.components : String(s.components).split(',').map(c=>c.trim()).filter(Boolean))
-          : []
-      }));
-    }
-  } catch {
-    data = MOCK;
-  }
+    const res  = await fetch(GAS_API_URL + '?action=getMasters');
+    masterData = await res.json();
+    if (!masterData.snapshot) masterData.snapshot = {};
+  } catch { masterData = { snapshot:{} }; }
+
   const now = new Date();
   document.getElementById('lastUpdated').textContent =
     '最終更新: ' + now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}) + '　(5分ごと自動更新)';
-  if (!currentProduct && data.products?.length) currentProduct = data.products[0].code;
-  render();
+
+  // 各工場パネルを描画
+  FACTORIES_CONFIG.forEach(f => renderFactory(f));
+  updateBanner();
+
   document.getElementById('refreshBtn').classList.remove('refreshing');
   document.getElementById('loading').classList.remove('show');
   clearTimeout(refreshTimer);
   refreshTimer = setTimeout(loadData, REFRESH_MS);
-  if (currentDTab === 'log') loadLogs();
+  if (currentFactory === 'log') loadLogs();
 }
 
+// ── バナー（現在選択工場の不足SKU） ──
+function updateBanner() {
+  const el = document.getElementById('bannerInHeader');
+  if (currentFactory === 'log') { el.style.display='none'; return; }
+  const f = FACTORIES_CONFIG.find(fc=>fc.code===currentFactory);
+  if (!f) return;
+  const shortage = [];
+  TYPES_CONFIG.forEach(t => {
+    getSkusForFactoryType(f, t.code).forEach(s => {
+      if (!s.shared && getDiff(masterData.snapshot[s.code]||{}) > 0) shortage.push(s);
+    });
+  });
+  el.style.display = '';
+  if (shortage.length) {
+    el.className = 'header-banner ng';
+    el.innerHTML = '⚠️ 在庫不足: ' + shortage.map(s=>`<button class="banner-link" onclick="jumpTo('sku-${s.code}')">${s.name}</button>`).join('、');
+  } else {
+    el.className = 'header-banner ok';
+    el.textContent = '✓ ' + f.label + ' — 全SKU在庫充足';
+  }
+}
+
+function jumpTo(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+// ── 工場パネル描画 ──
+function renderFactory(fConf) {
+  const panel = document.getElementById('dpanel-' + fConf.code);
+
+  // Pipeline Race（工場全体集計）
+  let totalBacklog=0, totalPipeline=0, totalTarget=0;
+  TYPES_CONFIG.forEach(t => {
+    getSkusForFactoryType(fConf, t.code).filter(s=>!s.shared||t.code==='tubu').forEach(s => {
+      const snap = masterData.snapshot[s.code]||{};
+      totalBacklog  += (snap.backlog||0);
+      totalPipeline += getProcessTotal(snap);
+      totalTarget   += (snap.target||0);
+    });
+  });
+  const diff       = totalBacklog - totalPipeline;
+  const targetDiff = totalTarget  - totalPipeline;
+
+  // Supply Chain
+  let factKg = 0;
+  const totals = {};
+  PROC_STAGES.forEach(st => { totals[st]=0; });
+  TYPES_CONFIG.forEach(t => {
+    getSkusForFactoryType(fConf, t.code).forEach(s => {
+      const snap = masterData.snapshot[s.code]||{};
+      factKg += (snap[fConf.stage]||0);
+      PROC_STAGES.forEach(st => { totals[st]+=(snap[st]||0); });
+    });
+  });
+  const factPcs = Math.round(factKg/KG_PER_PCS);
+  const kachi   = (totals['池本さん']||0)+(totals['刑務所']||0);
+
+  const node = (nm,disp,has,sub) =>
+    `<div class="cn"><div class="cn-name">${nm}</div><div class="cn-badge${has?' has':''}">${disp}</div><div class="cn-sub">${sub||''}</div></div>`;
+  const ar = '<div class="chain-ar">→</div>';
+
+  const chainHTML = node(fConf.label, factKg.toFixed(1)+'kg', factKg>0, '≈'+factPcs+'個')
+    + ar + node('エ社(未)', totals['エルアイシー(未縫製)'], totals['エルアイシー(未縫製)']>0, '個')
+    + ar + node('加工', kachi, kachi>0, '池本+刑務所')
+    + ar + node('エ社(加)', totals['エルアイシー(加工前)'], totals['エルアイシー(加工前)']>0, '個')
+    + ar + node('洗濯', totals['洗濯'], totals['洗濯']>0, '個')
+    + ar + node('内職', totals['内職'], totals['内職']>0, '個')
+    + ar + node('実在庫', totals['実在庫'], totals['実在庫']>0, '個');
+
+  // SKUマトリクス（商品タイプ別セクション）
+  const matrixSections = TYPES_CONFIG.map(t => {
+    const skus = getSkusForFactoryType(fConf, t.code);
+    const rows = skus.map(s => {
+      const snap     = masterData.snapshot[s.code]||{};
+      const kg       = snap[fConf.stage]||0;
+      const kPcs     = Math.round(kg/KG_PER_PCS);
+      const pt       = getProcessTotal(snap);
+      const diff2    = getDiff(snap);
+      const physStock = snap.physStock!=null?snap.physStock:(snap['実在庫']||0);
+      const target   = snap.target||0;
+      const targetDiff2 = target>0?target-pt:null;
+      const sign     = diff2>0?'+':'';
+      const dCls     = diff2>0?'diff-ng':diff2<0?'diff-ok':'diff-zero';
+      const tCls     = targetDiff2==null?'diff-zero':targetDiff2>0?'diff-ng':'diff-ok';
+      const shTag    = s.shared ? '<span class="shared-tag">★共有</span>' : '';
+      const stBadge  = physStock>0 ? `<span class="stock-badge">${physStock.toLocaleString()}</span>` : '';
+      return `<tr id="sku-${s.code}" class="${diff2>0?'ng-row':''}">
+        <td>${s.code}${shTag}${stBadge}<span class="sku-name">${s.name}</span></td>
+        <td>${kg.toFixed(1)}kg<span class="sub-kg">≈${kPcs}個</span></td>
+        <td>${snap['エルアイシー(未縫製)']||0}</td>
+        <td>${snap['池本さん']||0}</td>
+        <td>${snap['刑務所']||0}</td>
+        <td>${snap['エルアイシー(加工前)']||0}</td>
+        <td>${snap['洗濯']||0}</td>
+        <td>${snap['内職']||0}</td>
+        <td>${physStock}</td>
+        <td class="col-total">${pt}</td>
+        <td class="${dCls}">${sign}${diff2}</td>
+        <td>${target>0?target.toLocaleString():'—'}</td>
+      </tr>`;
+    }).join('');
+    return `<div class="type-section">
+      <div class="type-header">${t.name}ベビーレッグ</div>
+      <div class="matrix-wrap"><div class="matrix-scroll">
+        <table class="matrix">
+          <thead><tr>
+            <th>SKU / 実在庫</th><th>${fConf.label}(kg)</th>
+            <th>エ社(未)</th><th>池本</th><th>刑務所</th>
+            <th>エ社(加)</th><th>洗濯</th><th>内職</th><th>実在庫</th>
+            <th>工程合計</th><th>差分</th><th>目標数</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div></div>
+    </div>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="sec">PIPELINE RACE — ${fConf.label}</div>
+    <div class="race">
+      <div class="race-card ${diff<0?'ok':diff>0?'ng':''}">
+        <div class="race-lbl">出 荷 残</div>
+        <div class="race-val">${totalBacklog.toLocaleString()}</div>
+        <div class="race-unit">個</div>
+      </div>
+      <div class="race-card">
+        <div class="race-lbl">工 程 合 計</div>
+        <div class="race-val">${totalPipeline.toLocaleString()}</div>
+        <div class="race-unit">個換算</div>
+      </div>
+      <div class="race-card ${diff>0?'ng':'ok'}">
+        <div class="race-lbl">差 分</div>
+        <div class="race-val">${(diff>0?'+':'')+diff.toLocaleString()}</div>
+        <div class="race-unit">＋不足 ／ −余裕</div>
+      </div>
+      <div class="race-card">
+        <div class="race-lbl">目 標 合 計</div>
+        <div class="race-val">${totalTarget>0?totalTarget.toLocaleString():'未設定'}</div>
+        <div class="race-unit">個</div>
+      </div>
+      <div class="race-card ${totalTarget>0?(targetDiff>0?'ng':'ok'):''}">
+        <div class="race-lbl">目 標 差 分</div>
+        <div class="race-val">${totalTarget>0?(targetDiff>0?'+':'')+targetDiff.toLocaleString():'—'}</div>
+        <div class="race-unit">＋不足 ／ −超過</div>
+      </div>
+    </div>
+    <div class="sec">SUPPLY CHAIN — ${fConf.label}</div>
+    <div class="chain-wrap"><div class="chain">${chainHTML}</div></div>
+    <div class="sec">SKU MATRIX — ${fConf.label}</div>
+    ${matrixSections}`;
+}
+
+// ── ログ ──
 async function loadLogs() {
   document.getElementById('logList').innerHTML = '<div class="log-empty">読み込み中…</div>';
   try {
@@ -352,183 +419,23 @@ async function loadLogs() {
 function applyLogFilter() {
   const mf = document.getElementById('logModeFilter').value;
   const uf = document.getElementById('logUserFilter').value;
-  const filtered = allLogs.filter(l =>
-    (!mf || l.mode === mf) && (!uf || (l.user || '').includes(uf))
-  );
-  renderLogs(filtered);
+  renderLogs(allLogs.filter(l => (!mf||l.mode===mf) && (!uf||(l.user||'').includes(uf))));
 }
 
 function renderLogs(logs) {
-  if (!logs.length) {
-    document.getElementById('logList').innerHTML = '<div class="log-empty">該当ログがありません</div>';
-    return;
-  }
-  const modeClass = m => {
-    if (m === '工程移動')   return 'mc-move';
-    if (m === '外部入荷')   return 'mc-in';
-    if (m === '出荷数更新') return 'mc-ship';
-    if (m === '在庫修正')   return 'mc-fix';
-    return 'mc-other';
-  };
+  if (!logs.length) { document.getElementById('logList').innerHTML='<div class="log-empty">該当ログがありません</div>'; return; }
+  const chip = m => m==='工程移動'?'mc-move':m==='外部入荷'?'mc-in':m==='出荷数更新'?'mc-ship':m==='在庫修正'?'mc-fix':'mc-other';
   document.getElementById('logList').innerHTML = logs.map(l => {
-    const ts  = l.timestamp ? new Date(l.timestamp).toLocaleString('ja-JP',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-    const src = l.source && l.source !== '—' ? l.source + ' → ' : '';
-    const dst = l.dest   && l.dest   !== '—' ? l.dest : '';
-    const flow = src || dst ? `　${src}${dst}` : '';
+    const ts  = l.timestamp?new Date(l.timestamp).toLocaleString('ja-JP',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+    const src = l.source&&l.source!=='—'?l.source+' → ':'';
+    const dst = l.dest&&l.dest!=='—'?l.dest:'';
     return `<div class="log-item">
       <div class="log-time">${ts}</div>
-      <span class="log-mode-badge ${modeClass(l.mode)}">${l.mode}</span>
-      <div class="log-body">${l.skuName || l.skuCode || ''} <b>${l.qty}${l.unit||'個'}</b>${flow}</div>
-      ${l.memo ? `<div class="log-footer">📝 ${l.memo}</div>` : ''}
-      <div class="log-footer">👤 ${l.user || '—'}</div>
+      <span class="log-mode-badge ${chip(l.mode)}">${l.mode}</span>
+      <div class="log-body">${l.skuName||l.skuCode||''} <b>${l.qty}${l.unit||'個'}</b>${src||dst?'　'+src+dst:''}</div>
+      ${l.memo?`<div class="log-footer">📝 ${l.memo}</div>`:''}
+      <div class="log-footer">👤 ${l.user||'—'}</div>
     </div>`;
-  }).join('');
-}
-
-// ── 描画 ──
-function render() {
-  renderTabs();
-  const skus = getSkusForProduct(currentProduct);
-  renderBanner(skus);
-  renderRace(skus);
-  renderChain(skus);
-  renderMatrix(skus);
-}
-
-function getSkusForProduct(code) {
-  if (!data || !data.skus) return [];
-  const direct = data.skus.filter(s => s.product === code);
-  // 共有SKUをくすみにも表示（重複除外）
-  if (code === 'babyleg-tubu' || code === 'babyleg-kusumi') {
-    const directCodes = new Set(direct.map(s => s.code));
-    const shared = data.skus.filter(s => s.shared && !directCodes.has(s.code));
-    return [...shared, ...direct];
-  }
-  return direct;
-}
-
-function renderTabs() {
-  document.getElementById('ptabs').innerHTML = (data.products || []).map(p =>
-    `<button class="ptab${p.code === currentProduct ? ' active' : ''}" onclick="selectProduct('${p.code}')">${p.name}</button>`
-  ).join('');
-}
-
-function selectProduct(code) {
-  currentProduct = code;
-  render();
-}
-
-// ── バナー ──
-function renderBanner(skus) {
-  const el = document.getElementById('bannerInHeader');
-  const shortage = skus.filter(s => !s.isSet && getDiff(data.snapshot[s.code] || {}) > 0);
-  el.style.display = '';
-  if (shortage.length) {
-    el.className = 'header-banner ng';
-    el.innerHTML = '⚠️ 在庫不足: ' +
-      shortage.map(s => `<button class="banner-link" onclick="jumpTo('sku-${s.code}')">${s.name}</button>`).join('、');
-  } else {
-    el.className  = 'header-banner ok';
-    el.textContent = '✓ 全 SKU 在庫充足';
-  }
-}
-
-function jumpTo(id) {
-  const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior:'smooth', block:'center' });
-}
-
-// ── パイプラインレース ──
-function renderRace(skus) {
-  let totalBacklog = 0, totalPipeline = 0, totalTarget = 0;
-  skus.filter(s => !s.isSet).forEach(s => {
-    const snap    = data.snapshot[s.code] || {};
-    totalBacklog  += (snap.backlog || 0);
-    totalPipeline += getProcessTotal(snap);
-    totalTarget   += (snap.target  || 0);
-  });
-  const diff       = totalBacklog - totalPipeline;
-  const targetDiff = totalTarget  - totalPipeline;
-  document.getElementById('valBacklog').textContent    = totalBacklog.toLocaleString();
-  document.getElementById('valPipeline').textContent   = totalPipeline.toLocaleString();
-  document.getElementById('valDiff').textContent       = (diff > 0 ? '+' : '') + diff.toLocaleString();
-  document.getElementById('raceDiff').className        = 'race-card ' + (diff > 0 ? 'ng' : 'ok');
-  document.getElementById('valTarget').textContent     = totalTarget > 0 ? totalTarget.toLocaleString() : '未設定';
-  document.getElementById('valTargetDiff').textContent = totalTarget > 0 ? (targetDiff > 0 ? '+' : '') + targetDiff.toLocaleString() : '—';
-  document.getElementById('raceTargetDiff').className  = 'race-card ' + (totalTarget > 0 ? (targetDiff > 0 ? 'ng' : 'ok') : '');
-}
-
-// ── サプライチェーン（平本追加・洗濯追加） ──
-function renderChain(skus) {
-  let totalKg = 0;
-  const totals = {};
-  const chainStages = ['エルアイシー(未縫製)','池本さん+刑務所','エルアイシー(加工前)','洗濯','内職','実在庫'];
-  chainStages.forEach(k => { totals[k] = 0; });
-
-  skus.filter(s => !s.isSet).forEach(s => {
-    const snap = data.snapshot[s.code] || {};
-    FACTORIES.forEach(f => { totalKg += (snap[f] || 0); });
-    totals['エルアイシー(未縫製)']  += (snap['エルアイシー(未縫製)']  || 0);
-    totals['池本さん+刑務所']        += (snap['池本さん'] || 0) + (snap['刑務所'] || 0);
-    totals['エルアイシー(加工前)']  += (snap['エルアイシー(加工前)']  || 0);
-    totals['洗濯']                   += (snap['洗濯']                   || 0);
-    totals['内職']                   += (snap['内職']                   || 0);
-    totals['実在庫']                 += (snap['実在庫']                 || 0);
-  });
-  const totalKo = Math.round(totalKg / KG_PER_PCS);
-
-  const node = (name, display, has, sub) =>
-    `<div class="cn"><div class="cn-name">${name}</div><div class="cn-badge${has?' has':''}">${display}</div><div class="cn-sub">${sub||''}</div></div>`;
-  const ar = '<div class="chain-ar">→</div>';
-
-  document.getElementById('chain').innerHTML =
-    node('工場合計', totalKg.toFixed(1)+'kg', totalKg>0, '≈'+totalKo.toLocaleString()+'個')
-    + ar
-    + node('エ社(未縫製)', totals['エルアイシー(未縫製)'], totals['エルアイシー(未縫製)']>0, '個')
-    + ar
-    + node('加工', totals['池本さん+刑務所'], totals['池本さん+刑務所']>0, '池本+刑務所')
-    + ar
-    + node('エ社(加工前)', totals['エルアイシー(加工前)'], totals['エルアイシー(加工前)']>0, '個')
-    + ar
-    + node('洗濯', totals['洗濯'], totals['洗濯']>0, '個')
-    + ar
-    + node('内職', totals['内職'], totals['内職']>0, '個')
-    + ar
-    + node('実在庫', totals['実在庫'], totals['実在庫']>0, '個');
-}
-
-// ── SKUマトリクス（実在庫合計をSKU名横に表示） ──
-function renderMatrix(skus) {
-  document.getElementById('matrixBody').innerHTML = skus.map(s => {
-    const snap     = data.snapshot[s.code] || {};
-    const factKg   = FACTORIES.reduce((sum, f) => sum + (snap[f] || 0), 0);
-    const factPcs  = snap.factoryPcs != null ? snap.factoryPcs : Math.round(factKg / KG_PER_PCS);
-    const pt       = getProcessTotal(snap);
-    const diff     = getDiff(snap);
-    const physStock = snap.physStock != null ? snap.physStock : (snap['実在庫'] || 0);
-    const target   = snap.target || 0;
-    const diffSign  = diff > 0 ? '+' : '';
-    const diffCls  = diff > 0 ? 'diff-ng' : diff < 0 ? 'diff-ok' : 'diff-zero';
-    const targetDiff = target > 0 ? target - pt : null;
-    const tCls     = targetDiff == null ? 'diff-zero' : targetDiff > 0 ? 'diff-ng' : 'diff-ok';
-
-    const sharedTag = s.shared ? '<span class="shared-tag">共有</span>' : '';
-    const stockBadge = physStock > 0 ? `<span class="stock-badge">${physStock.toLocaleString()}</span>` : '';
-
-    return `<tr id="sku-${s.code}" class="${diff > 0 && !s.isSet ? 'ng-row' : ''}">
-      <td>${s.code}${sharedTag}${stockBadge}<span class="sku-name">${s.name}</span></td>
-      <td>${factKg.toFixed(1)}kg<span class="sub-kg">≈${factPcs}個</span></td>
-      <td>${snap['エルアイシー(未縫製)'] || 0}</td>
-      <td>${snap['池本さん']             || 0}</td>
-      <td>${snap['刑務所']               || 0}</td>
-      <td>${snap['エルアイシー(加工前)'] || 0}</td>
-      <td>${snap['洗濯']                 || 0}</td>
-      <td>${snap['内職']                 || 0}</td>
-      <td>${physStock}</td>
-      <td class="col-total">${pt}</td>
-      <td class="${diffCls}">${diffSign}${diff}</td>
-      <td>${target > 0 ? target.toLocaleString() : '—'}</td>
-    </tr>`;
   }).join('');
 }
 
