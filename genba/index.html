@@ -493,7 +493,6 @@ function updateUnitDisplay() {
   if (currentMode === '修正') {
     ud.textContent = selectedFix && FACTORY_STAGES.includes(selectedFix) ? 'kg' : '個'; return;
   }
-  if (selectedSource && FACTORY_STAGES.includes(selectedSource)) { ud.textContent = 'kg'; return; }
   ud.textContent = '個';
 }
 
