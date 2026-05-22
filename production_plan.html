@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>60%生産計画 — SOWAN</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Arial,'Hiragino Kaku Gothic ProN',sans-serif;font-size:14px;color:#1a1a1a;background:#f5f4f0;min-height:100vh}
+.topbar{background:#fff;border-bottom:1px solid #e8e6e0;padding:0 24px;display:flex;align-items:center;height:56px;gap:12px;position:sticky;top:0;z-index:100}
+.topbar-title{font-size:15px;font-weight:600}
+.topbar-sub{font-size:11px;color:#aaa;border-left:1px solid #e8e6e0;padding-left:12px}
+.container{max-width:960px;margin:0 auto;padding:24px 20px}
+.card{background:#fff;border:1px solid #e8e6e0;border-radius:12px;padding:20px 24px;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.drop-zone{border:2px dashed #d8d5cf;border-radius:10px;padding:24px;text-align:center;cursor:pointer;transition:all .15s;position:relative;background:#faf9f7}
+.drop-zone:hover,.drop-zone.drag{border-color:#999;background:#f0ede8}
+.drop-zone.ok{border-color:#16a34a;background:#f0fdf4}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-label{font-size:13px;color:#888;pointer-events:none}
+.drop-label strong{display:block;font-size:15px;font-weight:700;color:#1a1a1a;margin-bottom:4px}
+.drop-ok{font-size:13px;color:#16a34a;font-weight:600}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.06em}
+input[type=text],input[type=number]{padding:8px 10px;border:1px solid #d8d5cf;border-radius:7px;font-size:13px;background:#fff;font-family:inherit;width:100%}
+input:focus{outline:none;border-color:#999;box-shadow:0 0 0 3px rgba(0,0,0,.05)}
+.btn{padding:10px 20px;border:1px solid #d8d5cf;border-radius:8px;font-size:13px;cursor:pointer;background:#fff;color:#1a1a1a;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a;font-weight:600}
+.btn.primary:hover{background:#333}
+.btn.primary:disabled{background:#999;border-color:#999;cursor:not-allowed}
+.btn.green{background:#16a34a;color:#fff;border-color:#16a34a;font-size:15px;padding:12px 28px;font-weight:700}
+.btn.green:hover{background:#15803d}
+.alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px}
+.alert-err{background:#fcebeb;color:#a32d2d;border:1px solid #f0c0c0}
+.alert-ok{background:#eaf3de;color:#3a6d10;border:1px solid #b8d98a}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid #e0e0e0;border-top-color:#1a1a1a;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.preview-wrap{overflow-x:auto;border:1px solid #e8e6e0;border-radius:12px;background:#fff;margin-top:16px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{font-size:10px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.04em;padding:8px 12px;border-bottom:1px solid #e8e6e0;text-align:left;background:#faf9f7;white-space:nowrap}
+th.r,td.r{text-align:right}
+td{padding:8px 12px;border-bottom:1px solid #f0ede8;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#faf9f7}
+.code{font-family:monospace;font-size:11px;color:#888}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:1px 7px;border-radius:10px}
+.badge-ok{background:#eaf3de;color:#3a6d10}
+.badge-warn{background:#fff3e0;color:#b45309}
+.badge-err{background:#fcebeb;color:#a32d2d}
+.num{font-weight:600}
+.summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.s-card{background:#fff;border:1px solid #e8e6e0;border-radius:10px;padding:14px 16px;text-align:center}
+.s-label{font-size:11px;color:#999;margin-bottom:4px}
+.s-num{font-size:24px;font-weight:700}
+.s-unit{font-size:10px;color:#aaa}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-title">📋 60%生産計画</div>
+  <div class="topbar-sub">販売実績×0.6 — 不足数を自動算出してExcelを生成</div>
+  <a href="top.html" style="margin-left:auto;font-size:12px;color:#aaa;text-decoration:none">← ポータル</a>
+</div>
+
+<div class="container">
+  <div id="alert-area"></div>
+
+  <!-- Step1: ファイルアップロード -->
+  <div class="card">
+    <div class="card-title">① CSVファイルをアップロード</div>
+    <div class="grid2">
+      <div>
+        <div style="font-size:12px;font-weight:600;color:#555;margin-bottom:8px">販売CSV（楽天SKU別売上）</div>
+        <div class="drop-zone" id="zone-sales">
+          <input type="file" id="file-sales" accept=".csv" onchange="onFileSelect('sales',this)">
+          <div class="drop-label"><strong>📊 SKU別売上CSV</strong>楽天RMS → SKU別売上 → CSV出力<br><span style="font-size:11px;color:#bbb">UTF-8 BOM / 先頭6行スキップ</span></div>
+        </div>
+        <div id="sales-name" style="font-size:11px;color:#aaa;margin-top:5px"></div>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:600;color:#555;margin-bottom:8px">在庫CSV（CROSS MALL）</div>
+        <div class="drop-zone" id="zone-stock">
+          <input type="file" id="file-stock" accept=".csv" onchange="onFileSelect('stock',this)">
+          <div class="drop-label"><strong>📦 在庫エクスポートCSV</strong>CROSS MALL → 在庫エクスポート<br><span style="font-size:11px;color:#bbb">Shift-JIS / UTF-8 自動判定</span></div>
+        </div>
+        <div id="stock-name" style="font-size:11px;color:#aaa;margin-top:5px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step2: 設定 -->
+  <div class="card">
+    <div class="card-title">② 設定</div>
+    <div class="grid2">
+      <div class="form-group">
+        <label>目標生産係数 (%)</label>
+        <input type="number" id="cfg-ratio" value="60" min="1" max="200" step="1">
+      </div>
+      <div class="form-group">
+        <label>販売期間ラベル（Excel表示用）</label>
+        <input type="text" id="cfg-period" value="2025/09〜12 (4ヶ月)">
+      </div>
+      <div class="form-group">
+        <label>在庫日付ラベル（Excel表示用）</label>
+        <input type="text" id="cfg-stockdate" value="2026/05/21時点">
+      </div>
+    </div>
+  </div>
+
+  <!-- Step3: 生成 -->
+  <div style="text-align:center;margin-bottom:24px">
+    <button class="btn primary" id="gen-btn" onclick="run()" style="font-size:15px;padding:12px 32px" disabled>
+      📊 生産計画を生成する
+    </button>
+    <div id="gen-status" style="font-size:12px;color:#aaa;margin-top:8px"></div>
+  </div>
+
+  <!-- 結果 -->
+  <div id="result-area" style="display:none">
+    <div class="summary-row" id="summary-cards"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-size:14px;font-weight:700">単品詳細プレビュー（上位50件）</div>
+      <button class="btn green" onclick="downloadExcel()">⬇ Excel ダウンロード</button>
+    </div>
+    <div class="preview-wrap">
+      <table id="preview-table"></table>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// 設定定数
+// ============================================================
+const EXISTING_CODES = [
+  'q-swacap','mocchi-mask','c-kimo','mocchi-pants-5ml','oga-shorts',
+  'organic-lib-baby','q-pajama','silkhandw','q-sleeper','mocchi-pants',
+  'pm-swaddle','mocchi-og-5ml','nep-swacap','mash-legging','oga-shorts-me',
+  'nep-okurumi','30-40pants','mocchi-kids',
+];
+const NEW_CODES = [
+  'mocchi','bib-mel2p','bib-nep-lib','bib-g55-lib','mocchi-neck',
+  'bib-nep','mocchi-og','mocchi-neck-og','a-kimo','numa-bib','mocchi-og-kids',
+];
+const ALL_CODES = [...EXISTING_CODES, ...NEW_CODES];
+
+const PACK_MODE = {
+  ...Object.fromEntries(EXISTING_CODES.map(c=>[c,'single'])),
+  'mocchi':'pack','mocchi-neck':'pack','mocchi-og':'pack','mocchi-neck-og':'pack',
+  'mocchi-og-kids':'fixed_2pack',
+  'bib-mel2p':'pair_color','bib-nep-lib':'pair_color','bib-g55-lib':'pair_color',
+  'bib-nep':'pair_color','numa-bib':'pair_color',
+  'a-kimo':'single',
+};
+
+const STOCK_CODE_MAP = {
+  'mocchi':['mocchi'],'mocchi-neck':['mocchi-neck-new'],
+  'mocchi-og':['mocchi-og'],'mocchi-neck-og':['mocchi-neck-og-new'],
+  'mocchi-og-kids':['mocchi-og-kids'],'bib-mel2p':['bib-mel'],
+  'bib-nep':['bib-nep-z'],'bib-nep-lib':['z-bib-nep-lib'],
+  'bib-g55-lib':['z-bib-g55-lib'],'numa-bib':['numa-bib-z'],'a-kimo':['a-kimo'],
+};
+
+const MODE_LABEL = {
+  'single':'単品','pack':'1枚/2枚パック','fixed_2pack':'2枚組固定','pair_color':'色違い2枚セット',
+};
+
+// ============================================================
+// テキスト正規化
+// ============================================================
+function normalizeText(s) {
+  if (s == null) return '';
+  s = String(s).trim().normalize('NFKC');
+  s = s.replace(/[ぁ-ゖ]/g, ch => String.fromCharCode(ch.charCodeAt(0) + 0x60));
+  s = s.replace(/[～〜]/g, '~');
+  return s.toLowerCase();
+}
+
+function parseSkuInfo(sku) {
+  if (sku == null) return [null, null];
+  const parts = String(sku).split(/\s+x\s+/);
+  if (parts.length === 2) {
+    let a1 = parts[0].trim(), a2 = parts[1].trim();
+    return [a1 === '-' ? null : a1, a2];
+  }
+  return [null, parts[0]?.trim() || null];
+}
+
+function parsePack(s) {
+  const m = String(s).match(/^\s*[【\[]?(\d+)\s*[枚P][】\]]?\s*[:：]?\s*(.+)$/);
+  if (m) return [parseInt(m[1]), m[2].trim()];
+  return [1, String(s).trim()];
+}
+
+function stripUnitPrefix(s) {
+  if (s == null) return '';
+  s = String(s).replace(/^[【\[][^】\]]*[】\]]\s*/, '').replace(/^\d+枚組?\s*/, '').replace(/　/g, '').trim();
+  return normalizeText(s);
+}
+
+// ============================================================
+// ファイル読み込み
+// ============================================================
+let salesData = null, stockData = null;
+
+function readFileAsText(file, encoding) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    if (encoding === 'sjis') {
+      reader.onload = e => {
+        try { resolve(new TextDecoder('shift_jis').decode(e.target.result)); }
+        catch { resolve(new TextDecoder('utf-8').decode(e.target.result)); }
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      reader.onload = e => resolve(e.target.result);
+      reader.onerror = reject;
+      reader.readAsText(file, 'UTF-8');
+    }
+  });
+}
+
+async function parseCsv(text, skipRows) {
+  const lines = text.split('\n').slice(skipRows);
+  const cleaned = lines.join('\n');
+  return new Promise(resolve => {
+    Papa.parse(cleaned, {
+      header: true, skipEmptyLines: true, trimHeaders: true,
+      complete: r => resolve(r.data),
+    });
+  });
+}
+
+async function onFileSelect(type, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const zone = document.getElementById('zone-' + type);
+  const nameEl = document.getElementById(type + '-name');
+  try {
+    if (type === 'sales') {
+      const text = await readFileAsText(file, 'utf8');
+      salesData = await parseCsv(text, 6);
+      zone.classList.add('ok');
+      nameEl.textContent = `✓ ${file.name}（${salesData.length.toLocaleString()}行）`;
+    } else {
+      // Shift-JIS → UTF-8フォールバック
+      let text;
+      try { text = await readFileAsText(file, 'sjis'); }
+      catch { text = await readFileAsText(file, 'utf8'); }
+      stockData = await parseCsv(text, 0);
+      zone.classList.add('ok');
+      nameEl.textContent = `✓ ${file.name}（${stockData.length.toLocaleString()}行）`;
+    }
+  } catch(e) {
+    showAlert('ファイルの読み込みに失敗しました: ' + e.message, 'err');
+  }
+  document.getElementById('gen-btn').disabled = !(salesData && stockData);
+}
+
+// ============================================================
+// 在庫マッチング
+// ============================================================
+function filterStockForCode(stock, code) {
+  const codes = STOCK_CODE_MAP[code] || [code, code + '-'];
+  let sub = stock.filter(r => codes.includes(r['商品コード']));
+  sub = sub.filter(r => !String(r['属性１名'] || '').includes(':') && !String(r['属性２名'] || '').includes(':'));
+  sub = sub.filter(r => !String(r['属性２名'] || '').includes('発送'));
+  return sub;
+}
+
+function findStockSingle(sub, a1, a2) {
+  if (!sub.length) return [];
+  let df = sub.filter(r => String(r['属性２名'] || '') !== '単品購入');
+  const a1n = normalizeText(a1 || '');
+  const a2n = normalizeText(a2 || '');
+  const norm = r => ({ a1: normalizeText(r['属性１名']), a2: normalizeText(r['属性２名']) });
+  if (a1 && a2) {
+    let m = df.filter(r => { const n = norm(r); return n.a1 === a1n && n.a2 === a2n; });
+    if (m.length) return m;
+    return df.filter(r => { const n = norm(r); return n.a1 === a2n && n.a2 === a1n; });
+  } else if (a2) {
+    let m = df.filter(r => normalizeText(r['属性１名']) === a2n);
+    if (m.length) return m;
+    return df.filter(r => normalizeText(r['属性２名']) === a2n);
+  }
+  return [];
+}
+
+function findStockUnit(sub, unitName) {
+  if (!sub.length) return [];
+  const target = normalizeText(unitName);
+  const m = sub.filter(r => stripUnitPrefix(r['属性１名']) === target);
+  if (m.length > 1) {
+    const p = m.filter(r => String(r['属性１名'] || '').includes('【1枚】'));
+    if (p.length) return p;
+  }
+  return m;
+}
+
+function sumStock(rows) {
+  return rows.reduce((s, r) => s + (parseInt(r['在庫数量']) || 0), 0);
+}
+
+// ============================================================
+// 集計
+// ============================================================
+function aggregateUnits(sales, stock) {
+  const rows = [];
+  for (const code of ALL_CODES) {
+    const salesSub = sales.filter(r => r['商品管理番号'] === code);
+    const stockSub = filterStockForCode(stock, code);
+    const mode = PACK_MODE[code];
+    const units = {};
+
+    for (const srow of salesSub) {
+      const sku = srow['SKU情報'];
+      const qty = parseInt(srow['売上個数']) || 0;
+      const amt = parseInt(srow['売上']) || 0;
+
+      if (mode === 'single') {
+        const [a1, a2] = parseSkuInfo(sku);
+        const key = sku;
+        const matched = findStockSingle(stockSub, a1, a2);
+        const stockQty = sumStock(matched);
+        if (!units[key]) units[key] = { display: sku, 消費: 0, 売上: 0, 在庫: stockQty };
+        units[key].消費 += qty;
+        units[key].売上 += amt;
+
+      } else if (mode === 'pack') {
+        const [pieces, color] = parsePack(sku);
+        if (!units[color]) {
+          units[color] = { display: color, 消費: 0, 売上: 0, 在庫: sumStock(findStockUnit(stockSub, color)) };
+        }
+        units[color].消費 += qty * pieces;
+        units[color].売上 += amt;
+
+      } else if (mode === 'fixed_2pack') {
+        if (!units[sku]) {
+          units[sku] = { display: sku, 消費: 0, 売上: 0, 在庫: sumStock(findStockUnit(stockSub, sku)) };
+        }
+        units[sku].消費 += qty * 2;
+        units[sku].売上 += amt;
+
+      } else if (mode === 'pair_color') {
+        if (!sku || !String(sku).includes(' x ')) continue;
+        const [a, b] = String(sku).split(' x ', 2).map(s => s.trim());
+        for (const color of [a, b]) {
+          if (!units[color]) {
+            units[color] = { display: color, 消費: 0, 売上: 0, 在庫: sumStock(findStockUnit(stockSub, color)) };
+          }
+          units[color].消費 += qty;
+          units[color].売上 += Math.floor(amt / 2);
+        }
+      }
+    }
+
+    const sorted = Object.values(units).sort((a, b) => b.消費 - a.消費);
+    for (const info of sorted) {
+      rows.push({
+        商品管理番号: code, 単品: info.display, 販売形態: MODE_LABEL[mode],
+        '4ヶ月消費数': info.消費, 売上金額: info.売上, 現在在庫: info.在庫,
+      });
+    }
+  }
+  return rows;
+}
+
+// ============================================================
+// メイン実行
+// ============================================================
+let lastDetail = null;
+let lastRatio = 0.6;
+
+async function run() {
+  if (!salesData || !stockData) return;
+  const btn = document.getElementById('gen-btn');
+  const status = document.getElementById('gen-status');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>集計中...';
+  status.textContent = '';
+
+  await new Promise(r => setTimeout(r, 30));
+
+  try {
+    lastRatio = (parseFloat(document.getElementById('cfg-ratio').value) || 60) / 100;
+    const detail = aggregateUnits(salesData, stockData);
+    lastDetail = detail;
+    renderResult(detail, lastRatio);
+    document.getElementById('result-area').style.display = 'block';
+    document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' });
+  } catch(e) {
+    showAlert('集計エラー: ' + e.message, 'err');
+    console.error(e);
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '📊 生産計画を生成する';
+}
+
+function renderResult(detail, ratio) {
+  // サマリカード
+  const total消費 = detail.reduce((s, r) => s + r['4ヶ月消費数'], 0);
+  const total在庫 = detail.reduce((s, r) => s + r['現在在庫'], 0);
+  const total目標 = detail.reduce((s, r) => s + Math.round(r['4ヶ月消費数'] * ratio), 0);
+  const total不足 = detail.reduce((s, r) => s + Math.max(0, Math.round(r['4ヶ月消費数'] * ratio) - r['現在在庫']), 0);
+  document.getElementById('summary-cards').innerHTML = [
+    { label: '4ヶ月消費合計', val: total消費.toLocaleString(), unit: '枚' },
+    { label: '現在在庫合計', val: total在庫.toLocaleString(), unit: '枚' },
+    { label: `目標生産数（${Math.round(ratio*100)}%）`, val: total目標.toLocaleString(), unit: '枚' },
+    { label: '不足数合計', val: total不足.toLocaleString(), unit: '枚' },
+  ].map(c => `<div class="s-card"><div class="s-label">${c.label}</div><div class="s-num">${c.val}</div><div class="s-unit">${c.unit}</div></div>`).join('');
+
+  // プレビューテーブル（上位50件）
+  const preview = detail.slice(0, 50);
+  let h = `<thead><tr>
+    <th>商品管理番号</th><th>単品</th><th>販売形態</th>
+    <th class="r">4ヶ月消費</th><th class="r">現在在庫</th>
+    <th class="r">目標(${Math.round(ratio*100)}%)</th><th class="r">不足数</th>
+  </tr></thead><tbody>`;
+  for (const r of preview) {
+    const tgt = Math.round(r['4ヶ月消費数'] * ratio);
+    const shortage = Math.max(0, tgt - r['現在在庫']);
+    const badge = shortage >= 100 ? 'badge-err' : shortage > 0 ? 'badge-warn' : 'badge-ok';
+    const shortageStr = shortage > 0 ? `<span class="badge ${badge}">${shortage.toLocaleString()}</span>` : `<span style="color:#aaa">0</span>`;
+    h += `<tr>
+      <td class="code">${r['商品管理番号']}</td>
+      <td>${r['単品'] || '—'}</td>
+      <td style="font-size:11px;color:#aaa">${r['販売形態']}</td>
+      <td class="r num">${r['4ヶ月消費数'].toLocaleString()}</td>
+      <td class="r">${r['現在在庫'].toLocaleString()}</td>
+      <td class="r num">${tgt.toLocaleString()}</td>
+      <td class="r">${shortageStr}</td>
+    </tr>`;
+  }
+  h += '</tbody>';
+  document.getElementById('preview-table').innerHTML = h;
+}
+
+// ============================================================
+// Excel生成
+// ============================================================
+function makeCell(v, t, s, f) {
+  const c = { v, t: t || (typeof v === 'number' ? 'n' : 's'), s: s || {} };
+  if (f) c.f = f;
+  return c;
+}
+
+const HEADER_S = {
+  fill: { patternType: 'solid', fgColor: { rgb: 'FF305496' } },
+  font: { bold: true, color: { rgb: 'FFFFFFFF' }, name: 'Arial', sz: 11 },
+  alignment: { horizontal: 'center', vertical: 'center' },
+  border: { top:{style:'thin',color:{rgb:'FFB0B0B0'}}, bottom:{style:'thin',color:{rgb:'FFB0B0B0'}}, left:{style:'thin',color:{rgb:'FFB0B0B0'}}, right:{style:'thin',color:{rgb:'FFB0B0B0'}} },
+};
+const CELL_S = {
+  border: { top:{style:'thin',color:{rgb:'FFF0EDE8'}}, bottom:{style:'thin',color:{rgb:'FFF0EDE8'}}, left:{style:'thin',color:{rgb:'FFF0EDE8'}}, right:{style:'thin',color:{rgb:'FFF0EDE8'}} },
+  font: { name: 'Arial', sz: 11 },
+};
+const YELLOW_S = { ...CELL_S, fill: { patternType: 'solid', fgColor: { rgb: 'FFFFF2CC' } } };
+const RED_S = { ...CELL_S, fill: { patternType: 'solid', fgColor: { rgb: 'FFF4CCCC' } }, font: { ...CELL_S.font, bold: true, color: { rgb: 'FFC00000' } } };
+const GREEN_S = { ...CELL_S, fill: { patternType: 'solid', fgColor: { rgb: 'FFD9EAD3' } } };
+
+function setCell(ws, row, col, v, t, s, f) {
+  const addr = XLSX.utils.encode_cell({ r: row - 1, c: col - 1 });
+  ws[addr] = makeCell(v, t, s, f);
+}
+
+function encodeRange(r1, c1, r2, c2) {
+  return XLSX.utils.encode_range({ s: { r: r1-1, c: c1-1 }, e: { r: r2-1, c: c2-1 } });
+}
+
+function buildDetailSheet(wb, detail, ratio) {
+  const ws = {};
+  const period = document.getElementById('cfg-period').value;
+  const stockDate = document.getElementById('cfg-stockdate').value;
+  const pct = Math.round(ratio * 100);
+
+  // タイトル行
+  ws['A1'] = { v: '単品(色×サイズ)レベル 販売消費・在庫・生産進捗管理', t: 's', s: { font: { bold: true, sz: 14, name: 'Arial' } } };
+  ws['A2'] = { v: `販売期間: ${period} ／ 在庫: ${stockDate} ／ 目標生産数 = 4ヶ月消費数 × ${pct}%`, t: 's', s: { font: { italic: true, color: { rgb: 'FF666666' }, name: 'Arial' } } };
+  ws['A3'] = { v: '※ 1枚/2枚パック・色違い2枚セットは単品(1枚)単位に分解して集計', t: 's', s: { font: { italic: true, sz: 10, color: { rgb: 'FF666666' }, name: 'Arial' } } };
+
+  // ヘッダー行5
+  const headers = ['商品管理番号','単品','販売形態','終売','4ヶ月消費数','売上金額','現在在庫',`目標生産数(${pct}%)`, '不足数','ステータス','発注先','発注数','発注日','入荷予定日','備考'];
+  const widths =  [22, 30, 16, 8, 14, 14, 12, 16, 12, 16, 16, 11, 14, 14, 28];
+  headers.forEach((h, i) => setCell(ws, 5, i+1, h, 's', HEADER_S));
+
+  // データ行
+  let codeRanges = {};
+  detail.forEach((row, ri) => {
+    const er = 6 + ri;
+    const tgt = Math.round(row['4ヶ月消費数'] * ratio);
+    const shortage = Math.max(0, tgt - row['現在在庫']);
+
+    const shortageS = shortage >= 100 ? RED_S : shortage === 0 ? GREEN_S : CELL_S;
+
+    setCell(ws, er, 1, row['商品管理番号'], 's', { ...CELL_S, font: { ...CELL_S.font, color: { rgb: 'FF888888' } } });
+    setCell(ws, er, 2, row['単品'], 's', CELL_S);
+    setCell(ws, er, 3, row['販売形態'], 's', { ...CELL_S, font: { ...CELL_S.font, sz: 10, color: { rgb: 'FF888888' } } });
+    setCell(ws, er, 4, '☐', 's', { ...CELL_S, alignment: { horizontal: 'center' } });
+    setCell(ws, er, 5, row['4ヶ月消費数'], 'n', { ...CELL_S, numFmt: '#,##0', alignment: { horizontal: 'right' } });
+    setCell(ws, er, 6, row['売上金額'], 'n', { ...CELL_S, numFmt: '¥#,##0', alignment: { horizontal: 'right' } });
+    setCell(ws, er, 7, row['現在在庫'], 'n', { ...CELL_S, numFmt: '#,##0', alignment: { horizontal: 'right' } });
+    setCell(ws, er, 8, tgt, 'n', { ...YELLOW_S, numFmt: '#,##0', alignment: { horizontal: 'right' }, font: { ...YELLOW_S.font, bold: true } });
+    setCell(ws, er, 9, shortage, 'n', { ...shortageS, numFmt: '#,##0', alignment: { horizontal: 'right' } });
+    const initStatus = shortage === 0 ? '-' : '①未着手';
+    setCell(ws, er, 10, initStatus, 's', { ...YELLOW_S, alignment: { horizontal: 'center' } });
+    // K-O: 空欄
+    for (let ci = 11; ci <= 15; ci++) setCell(ws, er, ci, '', 's', CELL_S);
+
+    const code = row['商品管理番号'];
+    if (!codeRanges[code]) codeRanges[code] = [er, er, row['販売形態']];
+    else codeRanges[code][1] = er;
+  });
+
+  const lastRow = 5 + detail.length;
+  ws['!ref'] = encodeRange(1, 1, lastRow, 15);
+  ws['!cols'] = widths.map(w => ({ wpx: w * 7 }));
+  ws['!freeze'] = { xSplit: 0, ySplit: 5 };
+  ws['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: 14 } },
+    { s: { r: 1, c: 0 }, e: { r: 1, c: 14 } },
+    { s: { r: 2, c: 0 }, e: { r: 2, c: 14 } },
+  ];
+
+  wb.SheetNames.push('単品詳細');
+  wb.Sheets['単品詳細'] = ws;
+  return codeRanges;
+}
+
+function buildSummarySheet(wb, detail, ratio) {
+  const ws = {};
+
+  ws['A1'] = { v: '商品管理番号別 サマリ（単品ベース集計）', t: 's', s: { font: { bold: true, sz: 14, name: 'Arial' } } };
+  ws['A2'] = { v: '※「単品詳細」シートの集計。終売チェック後は手動で目標生産数を0に更新してください', t: 's', s: { font: { italic: true, sz: 10, color: { rgb: 'FF666666' }, name: 'Arial' } } };
+
+  const hdrs = ['商品管理番号','販売形態','単品数','4ヶ月消費数','売上金額','現在在庫','目標生産数','不足数'];
+  const wids = [22, 16, 9, 14, 14, 12, 14, 12];
+  hdrs.forEach((h, i) => setCell(ws, 4, i+1, h, 's', HEADER_S));
+
+  // 商品管理番号ごとに集計
+  const byCode = {};
+  for (const row of detail) {
+    const code = row['商品管理番号'];
+    if (!byCode[code]) byCode[code] = { mode: row['販売形態'], count: 0, 消費: 0, 売上: 0, 在庫: 0 };
+    byCode[code].count++;
+    byCode[code].消費 += row['4ヶ月消費数'];
+    byCode[code].売上 += row['売上金額'];
+    byCode[code].在庫 += row['現在在庫'];
+  }
+
+  const codeOrder = Object.entries(byCode).sort((a, b) => b[1].消費 - a[1].消費);
+  let totalRow = { count: 0, 消費: 0, 売上: 0, 在庫: 0, 目標: 0, 不足: 0 };
+
+  codeOrder.forEach(([code, info], ri) => {
+    const er = 5 + ri;
+    const tgt = Math.round(info.消費 * ratio);
+    const shortage = Math.max(0, tgt - info.在庫);
+    const shortS = shortage >= 500 ? RED_S : shortage === 0 ? GREEN_S : CELL_S;
+
+    setCell(ws, er, 1, code, 's', CELL_S);
+    setCell(ws, er, 2, info.mode, 's', { ...CELL_S, font: { ...CELL_S.font, sz: 10, color: { rgb: 'FF888888' } } });
+    setCell(ws, er, 3, info.count, 'n', { ...CELL_S, numFmt: '#,##0', alignment: { horizontal: 'right' } });
+    setCell(ws, er, 4, info.消費, 'n', { ...CELL_S, numFmt: '#,##0', alignment: { horizontal: 'right' } });
+    setCell(ws, er, 5, info.売上, 'n', { ...CELL_S, numFmt: '¥#,##0', alignment: { horizontal: 'right' } });
+    setCell(ws, er, 6, info.在庫, 'n', { ...CELL_S, numFmt: '#,##0', alignment: { horizontal: 'right' } });
+    setCell(ws, er, 7, tgt, 'n', { ...YELLOW_S, numFmt: '#,##0', alignment: { horizontal: 'right' }, font: { ...YELLOW_S.font, bold: true } });
+    setCell(ws, er, 8, shortage, 'n', { ...shortS, numFmt: '#,##0', alignment: { horizontal: 'right' } });
+
+    totalRow.count += info.count; totalRow.消費 += info.消費; totalRow.売上 += info.売上;
+    totalRow.在庫 += info.在庫; totalRow.目標 += tgt; totalRow.不足 += shortage;
+  });
+
+  // 合計行
+  const tr = 5 + codeOrder.length;
+  const totalBlue = { fill: { patternType: 'solid', fgColor: { rgb: 'FFD9E1F2' } }, font: { bold: true, name: 'Arial', sz: 11 }, border: CELL_S.border, alignment: { horizontal: 'right' } };
+  setCell(ws, tr, 1, '合計', 's', { ...totalBlue, alignment: { horizontal: 'left' } });
+  [['', 2], [totalRow.count, 3], [totalRow.消費, 4], [totalRow.売上, 5], [totalRow.在庫, 6], [totalRow.目標, 7], [totalRow.不足, 8]].forEach(([v, ci]) => {
+    if (v === '') { setCell(ws, tr, ci, '', 's', totalBlue); return; }
+    const fmt = ci === 5 ? '¥#,##0' : '#,##0';
+    setCell(ws, tr, ci, v, 'n', { ...totalBlue, numFmt: fmt });
+  });
+
+  ws['!ref'] = encodeRange(1, 1, tr, 8);
+  ws['!cols'] = wids.map(w => ({ wpx: w * 7 }));
+  ws['!freeze'] = { xSplit: 0, ySplit: 4 };
+
+  wb.SheetNames.unshift('サマリ');
+  wb.Sheets['サマリ'] = ws;
+}
+
+function downloadExcel() {
+  if (!lastDetail) return;
+  const wb = { SheetNames: [], Sheets: {} };
+  buildDetailSheet(wb, lastDetail, lastRatio);
+  buildSummarySheet(wb, lastDetail, lastRatio);
+
+  const pct = Math.round(lastRatio * 100);
+  const today = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  XLSX.writeFile(wb, `生産計画_${pct}%目標_${today}.xlsx`);
+}
+
+// ============================================================
+// UI
+// ============================================================
+function showAlert(msg, type) {
+  const a = document.getElementById('alert-area');
+  a.innerHTML = `<div class="alert alert-${type}" style="margin-bottom:14px">${msg}</div>`;
+  setTimeout(() => a.innerHTML = '', 5000);
+}
+
+// ドラッグ＆ドロップ
+['sales','stock'].forEach(type => {
+  const zone = document.getElementById('zone-' + type);
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag');
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    const input = document.getElementById('file-' + type);
+    const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files;
+    onFileSelect(type, input);
+  });
+});
+</script>
+</body>
+</html>

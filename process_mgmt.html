@@ -443,8 +443,8 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sb=supabase.createClient(SB_URL,SB_KEY);
 
 // 工程コード→日本語・バッジのマッピング
-const PROC_LABEL={knit:'編み',dye:'染色',cut:'裁断',sew:'縫製',inner:'内職',stock:'実在庫',socks:'靴下',yarn:'糸',other:'その他'};
-const PROC_BADGE={knit:'badge-ami',dye:'badge-some',cut:'badge-sai',sew:'badge-hoso',inner:'badge-naishoku',stock:'badge-stock',socks:'badge-hoso',yarn:'badge-some',other:'badge-stock'};
+const PROC_LABEL={knit:'編み',dye:'染色',print:'プリント',cut:'裁断',sew:'縫製',inner:'内職',stock:'実在庫',socks:'靴下',yarn:'糸',other:'その他'};
+const PROC_BADGE={knit:'badge-ami',dye:'badge-some',print:'badge-some',cut:'badge-sai',sew:'badge-hoso',inner:'badge-naishoku',stock:'badge-stock',socks:'badge-hoso',yarn:'badge-some',other:'badge-stock'};
 const FABRIC_PROCS=['knit','dye']; // 生地工程（反単位）
 
 let locations=[], fabrics=[], products=[], logs=[], master=[];
@@ -1052,7 +1052,7 @@ function suggestCutFabric(q){
   document.getElementById('c-hint').textContent='';
   if(!q){listEl.style.display='none';return;}
   const ql=q.toLowerCase();
-  const hits=fabrics.filter(f=>(f.fabric_no+' '+f.color).toLowerCase().includes(ql)).slice(0,12);
+  const hits=fabrics.filter(f=>(f.fabric_no+' '+f.color).toLowerCase().includes(ql)).slice(0,50);
   if(!hits.length){listEl.style.display='none';return;}
   listEl.innerHTML=hits.map(f=>{
     const l=loc(f.location_id);

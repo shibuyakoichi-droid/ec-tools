@@ -51,6 +51,7 @@ tbody tr:hover td{background:#faf9f7}
 .proc-yarn{background:#fff0e8;color:#9a4500}
 .proc-socks{background:#fce8f0;color:#8a2244}
 .proc-other{background:#f0ede8;color:#777}
+.proc-print{background:#fce8fb;color:#7a0a7a}
 .matrix-wrap{overflow-x:auto;background:#fff;border:1px solid #e8e6e0;border-radius:12px;margin-bottom:16px}
 .matrix-table{border-collapse:collapse;font-size:12px;white-space:nowrap;width:100%}
 .matrix-table th{padding:10px 14px;border-bottom:1px solid #e8e6e0;border-right:1px solid #f0ede8;background:#faf9f7;font-size:11px;font-weight:600;color:#999;text-align:center}
@@ -105,10 +106,10 @@ tbody tr:hover td{background:#faf9f7}
       <div class="form-row">
         <div class="form-group" style="flex:2"><label>名前</label><input type="text" id="new-fac-name" placeholder="例：〇〇ニット"></div>
         <div class="form-group"><label>工程</label>
-          <select id="new-fac-proc"><option value="knit">編み</option><option value="dye">染色</option><option value="cut">裁断</option><option value="sew">縫製</option><option value="socks">靴下</option><option value="yarn">糸</option><option value="inner">内職</option><option value="stock">自社在庫</option><option value="other">その他</option></select>
+          <select id="new-fac-proc"><option value="knit">編み</option><option value="dye">染色</option><option value="print">プリント</option><option value="cut">裁断</option><option value="sew">縫製</option><option value="socks">靴下</option><option value="yarn">糸</option><option value="inner">内職</option><option value="stock">自社在庫</option><option value="other">その他</option></select>
         </div>
         <div class="form-group"><label>数量単位</label>
-          <select id="new-fac-unit"><option value="反">反</option><option value="枚">枚</option><option value="足">足</option><option value="kg">kg</option></select>
+          <select id="new-fac-unit"><option value="反">反</option><option value="枚">枚</option><option value="足">足</option><option value="kg">kg</option><option value="m">m</option></select>
         </div>
         <button class="btn primary" onclick="addFactory()">追加</button>
       </div>
@@ -234,6 +235,7 @@ tbody tr:hover td{background:#faf9f7}
       <button class="ptab" onclick="switchPtab('sew')">🪡 縫製単価</button>
       <button class="ptab" onclick="switchPtab('socks-tan')">🧦 靴下編み単価</button>
       <button class="ptab" onclick="switchPtab('socks-kg')">⚖️ 靴下kg単価</button>
+      <button class="ptab" onclick="switchPtab('print')">🖨️ プリント単価</button>
     </div>
     <div class="ppanel active" id="ppanel-knit">
       <div class="sec-header"><div class="sec-title">編み単価 <span class="sec-count">生地品番 × 編み工場 / 円・反</span></div><button class="btn primary sm">💾 保存</button></div>
@@ -259,6 +261,10 @@ tbody tr:hover td{background:#faf9f7}
       <div class="sec-header"><div class="sec-title">靴下kg単価 <span class="sec-count">靴下品番 × 靴下工場 / 円・kg</span></div><button class="btn primary sm">💾 保存</button></div>
       <div class="matrix-wrap"><div id="matrix-socks-kg"><div class="loading">読み込み中...</div></div></div>
     </div>
+    <div class="ppanel" id="ppanel-print">
+      <div class="sec-header"><div class="sec-title">プリント単価 <span class="sec-count">プリント方式 × プリント工場 / 円・m</span></div><button class="btn primary sm" onclick="savePrintPrices()">💾 保存</button></div>
+      <div class="matrix-wrap"><div id="matrix-print"><div class="loading">読み込み中...</div></div></div>
+    </div>
   </div>
 
 </div>
@@ -271,8 +277,9 @@ const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let factories=[], items=[], prices=[], products=[], fabrics=[], fabricColors=[];
 let allItems=[], allProducts=[], allFabrics=[], allFabricColors=[];
 
-const PROC_LABEL={knit:'編み',dye:'染色',cut:'裁断',sew:'縫製',socks:'靴下',yarn:'糸',inner:'内職',stock:'自社在庫',other:'その他'};
-const PROC_CLASS={knit:'proc-knit',dye:'proc-dye',cut:'proc-cut',sew:'proc-sew',socks:'proc-socks',yarn:'proc-yarn',inner:'proc-inner',stock:'proc-stock',other:'proc-other'};
+const PROC_LABEL={knit:'編み',dye:'染色',print:'プリント',cut:'裁断',sew:'縫製',socks:'靴下',yarn:'糸',inner:'内職',stock:'自社在庫',other:'その他'};
+const PROC_CLASS={knit:'proc-knit',dye:'proc-dye',print:'proc-print',cut:'proc-cut',sew:'proc-sew',socks:'proc-socks',yarn:'proc-yarn',inner:'proc-inner',stock:'proc-stock',other:'proc-other'};
+const PRINT_METHODS=[{key:'print_auto',name:'オート'},{key:'print_rotary_s',name:'ロータリーS巾'},{key:'print_rotary_w',name:'ロータリーW巾'},{key:'print_transfer_s',name:'転写S巾'},{key:'print_transfer_w',name:'転写W巾'}];
 
 function procBadge(p){return `<span class="badge ${PROC_CLASS[p]||'proc-other'}">${PROC_LABEL[p]||p}</span>`;}
 
@@ -288,7 +295,7 @@ function switchTab(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
 }
-const PTABS=['knit','dye','cut','sew','socks-tan','socks-kg'];
+const PTABS=['knit','dye','cut','sew','socks-tan','socks-kg','print'];
 function switchPtab(id){
   document.querySelectorAll('.ptab').forEach((t,i)=>t.classList.toggle('active',PTABS[i]===id));
   document.querySelectorAll('.ppanel').forEach(p=>p.classList.remove('active'));
@@ -510,7 +517,7 @@ function getFabricColorPrice(fc,cn){const c=allFabricColors.find(x=>x.fabric_cod
 function renderPriceMatrices(){
   const knitFacs=factories.filter(f=>f.process==='knit'),dyeFacs=factories.filter(f=>f.process==='dye');
   const cutFacs=factories.filter(f=>f.process==='cut'),sewFacs=factories.filter(f=>f.process==='sew');
-  const socksFacs=factories.filter(f=>f.process==='socks');
+  const socksFacs=factories.filter(f=>f.process==='socks'),printFacs=factories.filter(f=>f.process==='print');
   const cutSewProds=allProducts.filter(p=>p.process==='cut'||p.process==='sew');
   const socksProds=allProducts.filter(p=>p.process==='socks');
   buildFabricOnlyMatrix('matrix-knit',allFabrics,knitFacs);
@@ -519,6 +526,7 @@ function renderPriceMatrices(){
   buildProductMatrix('matrix-sew',cutSewProds,sewFacs);
   buildProductMatrix('matrix-socks-tan',socksProds,socksFacs);
   buildProductMatrix('matrix-socks-kg',socksProds,socksFacs);
+  buildPrintMatrix('matrix-print',printFacs);
 }
 function buildFabricOnlyMatrix(elId,rowFabs,colFacs){
   const el=document.getElementById(elId);
@@ -563,6 +571,35 @@ function buildProductMatrix(elId,rowProds,colFacs){
     h+=`</tr>`;
   });
   el.innerHTML=h+'</tbody></table>';
+}
+
+function buildPrintMatrix(elId,colFacs){
+  const el=document.getElementById(elId);
+  if(!colFacs.length){el.innerHTML='<div class="empty">プリント工場がありません</div>';return;}
+  let h=`<table class="matrix-table"><thead><tr><th class="row-header">プリント方式</th>`;
+  colFacs.forEach(f=>h+=`<th>${f.name}<div class="proc-col">円/m</div></th>`);
+  h+=`</tr></thead><tbody>`;
+  PRINT_METHODS.forEach(m=>{
+    h+=`<tr><td class="row-label">${m.name}</td>`;
+    colFacs.forEach(f=>h+=`<td class="price-cell"><input type="number" placeholder="—" data-fac="${f.id}" data-method="${m.key}" value="${getPrice(f.id,m.key)}"></td>`);
+    h+=`</tr>`;
+  });
+  el.innerHTML=h+'</tbody></table>';
+}
+async function savePrintPrices(){
+  const inputs=document.querySelectorAll('#matrix-print input[data-fac]');
+  const upserts=[];
+  inputs.forEach(inp=>{
+    const v=inp.value.trim();
+    if(v==='')return;
+    upserts.push({fac_id:inp.dataset.fac,product_code:inp.dataset.method,unit_price:parseFloat(v)});
+  });
+  if(!upserts.length)return alert('入力がありません');
+  const {error}=await _sb.from('master_prices').upsert(upserts,{onConflict:'fac_id,product_code'});
+  if(error){alert('保存エラー: '+error.message);return;}
+  const {data}=await _sb.from('master_prices').select('*');
+  prices=data||[];
+  alert('保存しました');
 }
 
 loadAll();
