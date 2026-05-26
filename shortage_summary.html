@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>欠品集計ツール</title>
+<style>
+  :root {
+    --bg: #f6f5f1;
+    --card: #ffffff;
+    --ink: #1c1c1c;
+    --sub: #6b6b6b;
+    --line: #e3e0d8;
+    --accent: #c2410c;
+    --accent-soft: #fef2e8;
+    --warn: #d97706;
+    --ok: #047857;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 24px;
+    line-height: 1.6;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  header { margin-bottom: 24px; }
+  h1 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .subtitle { color: var(--sub); font-size: 13px; margin-top: 4px; }
+
+  .drop-zone {
+    background: var(--card);
+    border: 2px dashed var(--line);
+    border-radius: 12px;
+    padding: 40px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 16px;
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .drop-zone p { color: var(--sub); font-size: 14px; }
+  .drop-zone strong { color: var(--ink); display: block; margin-bottom: 6px; font-size: 15px; }
+  .drop-zone input { display: none; }
+
+  .toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    background: var(--ink);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn.secondary { background: white; color: var(--ink); border: 1px solid var(--line); }
+  .btn.danger { background: white; color: var(--accent); border: 1px solid var(--line); }
+
+  .file-list {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+  .file-list:empty { display: none; }
+  .file-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .file-item:last-child { border-bottom: none; }
+  .file-item .name { color: var(--ink); }
+  .file-item .meta { color: var(--sub); font-size: 12px; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .stat .label { font-size: 11px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat .value { font-size: 24px; font-weight: 600; margin-top: 4px; }
+  .stat .value.accent { color: var(--accent); }
+
+  table {
+    width: 100%;
+    background: var(--card);
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    font-size: 13px;
+  }
+  thead { background: #fafaf7; }
+  th, td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+  }
+  th {
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--sub);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    user-select: none;
+  }
+  th:hover { color: var(--ink); }
+  th.sorted::after { content: " ↓"; color: var(--accent); }
+  th.sorted.asc::after { content: " ↑"; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.num.highlight { color: var(--accent); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafaf7; }
+  .code { font-family: "SF Mono", Monaco, Consolas, monospace; font-size: 12px; color: var(--sub); }
+
+  .empty {
+    text-align: center;
+    padding: 40px;
+    color: var(--sub);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+  .filter {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 13px;
+    width: 240px;
+    font-family: inherit;
+  }
+  .filter:focus { outline: none; border-color: var(--accent); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .print-header {
+    display: none;
+  }
+
+  /* 印刷用スタイル */
+  @media print {
+    body {
+      background: white;
+      padding: 0;
+      font-size: 11pt;
+    }
+    .container { max-width: 100%; }
+    header, .drop-zone, .file-list, .toolbar, .stats, .empty {
+      display: none !important;
+    }
+    .print-header {
+      display: block;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #000;
+    }
+    .print-header h2 {
+      font-size: 16pt;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .print-header .meta {
+      font-size: 9pt;
+      color: #333;
+      display: flex;
+      gap: 16px;
+    }
+    #content { display: block !important; }
+    table {
+      border: 1px solid #000;
+      border-radius: 0;
+      font-size: 10pt;
+      page-break-inside: auto;
+    }
+    thead { background: #f0f0f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; }
+    th, td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #999;
+    }
+    th {
+      color: #000;
+      font-size: 9pt;
+      cursor: default;
+    }
+    th::after { content: "" !important; }
+    td.num.highlight { color: #000; font-weight: 700; }
+    .code { color: #333; }
+    tr:hover td { background: transparent; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>欠品集計ツール</h1>
+    <p class="subtitle">欠品情報CSV(CROSS MALL形式)を商品コード単位で集計します。複数ファイル投入OK・伝票重複は自動除外。</p>
+  </header>
+
+  <label class="drop-zone" id="dropZone" for="fileInput">
+    <strong>📥 CSVをドロップ または クリックして選択</strong>
+    <p>欠品情報CSV(Shift_JIS / UTF-8 自動判定)・複数ファイル可</p>
+    <input type="file" id="fileInput" accept=".csv" multiple>
+  </label>
+
+  <div class="file-list" id="fileList"></div>
+
+  <div id="content" style="display:none;">
+    <div class="print-header">
+      <h2>欠品一覧</h2>
+      <div class="meta">
+        <span id="printDate"></span>
+        <span id="printStats"></span>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <input type="text" id="filter" class="filter" placeholder="商品コード・商品名で絞り込み…">
+      <button class="btn" id="printBtn">🖨️ 印刷</button>
+      <button class="btn secondary" id="exportCsv">CSV書き出し</button>
+      <button class="btn danger" id="clearAll">全クリア</button>
+    </div>
+
+    <div class="stats" id="stats"></div>
+    <table id="resultTable">
+      <thead>
+        <tr>
+          <th data-sort="code">商品コード</th>
+          <th data-sort="name">商品名</th>
+          <th data-sort="qty" class="sorted">欠品数</th>
+          <th data-sort="orders">伝票件数</th>
+          <th data-sort="set">セット商品コード</th>
+        </tr>
+      </thead>
+      <tbody id="resultBody"></tbody>
+    </table>
+  </div>
+
+  <div id="emptyState" class="empty">
+    まだファイルが読み込まれていません
+  </div>
+</div>
+
+<script>
+// 全行データ(重複除外後)を保持
+const allRows = [];
+const seenKeys = new Set(); // 伝票No+行番号で重複判定
+const loadedFiles = [];
+let sortKey = 'qty';
+let sortAsc = false;
+
+// 文字コード自動判定読み込み(Shift_JIS優先 → UTF-8フォールバック)
+function readCSV(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const buffer = e.target.result;
+      // まずShift_JIS(CP932)で試す
+      let text;
+      try {
+        text = new TextDecoder('shift_jis', { fatal: false }).decode(buffer);
+        // BOMチェックでUTF-8の可能性を見る
+        if (text.charCodeAt(0) === 0xFEFF || /^[\x20-\x7e　-鿿＀-￯\r\n,]+/.test(text.slice(0, 200)) === false) {
+          // 文字化けっぽい→UTF-8で再試行
+          const utf8 = new TextDecoder('utf-8', { fatal: false }).decode(buffer);
+          if (utf8.includes('商品コード') || utf8.includes('欠品')) text = utf8;
+        }
+      } catch (err) {
+        text = new TextDecoder('utf-8').decode(buffer);
+      }
+      // BOM除去
+      if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+      resolve(text);
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+// シンプルCSVパーサ(クォート対応)
+function parseCSV(text) {
+  const rows = [];
+  let cur = [], field = '', inQuote = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuote) {
+      if (c === '"' && text[i+1] === '"') { field += '"'; i++; }
+      else if (c === '"') inQuote = false;
+      else field += c;
+    } else {
+      if (c === '"') inQuote = true;
+      else if (c === ',') { cur.push(field); field = ''; }
+      else if (c === '\n') { cur.push(field); rows.push(cur); cur = []; field = ''; }
+      else if (c === '\r') {}
+      else field += c;
+    }
+  }
+  if (field || cur.length) { cur.push(field); rows.push(cur); }
+  return rows.filter(r => r.length > 1 || (r.length === 1 && r[0].trim() !== ''));
+}
+
+async function handleFiles(files) {
+  for (const file of files) {
+    try {
+      const text = await readCSV(file);
+      const rows = parseCSV(text);
+      if (rows.length < 2) continue;
+
+      const headers = rows[0].map(h => h.trim());
+      const idx = {
+        ticket: headers.indexOf('出荷伝票No'),
+        line: headers.indexOf('行番号'),
+        setCode: headers.indexOf('セット商品コード'),
+        code: headers.indexOf('商品コード'),
+        name: headers.indexOf('商品名'),
+        qty: headers.indexOf('欠品数'),
+        expiry: headers.indexOf('賞味期限'),
+      };
+
+      if (idx.code === -1 || idx.qty === -1) {
+        alert(`${file.name}: 「商品コード」「欠品数」列が見つかりません`);
+        continue;
+      }
+
+      let added = 0, skipped = 0;
+      for (let i = 1; i < rows.length; i++) {
+        const r = rows[i];
+        if (!r[idx.code]) continue;
+        const key = `${r[idx.ticket] || ''}_${r[idx.line] || ''}_${r[idx.code]}`;
+        if (seenKeys.has(key)) { skipped++; continue; }
+        seenKeys.add(key);
+        allRows.push({
+          ticket: r[idx.ticket] || '',
+          line: r[idx.line] || '',
+          setCode: idx.setCode >= 0 ? (r[idx.setCode] || '') : '',
+          code: r[idx.code],
+          name: idx.name >= 0 ? (r[idx.name] || '').trim() : '',
+          qty: parseInt(r[idx.qty]) || 0,
+          expiry: idx.expiry >= 0 ? (r[idx.expiry] || '') : '',
+        });
+        added++;
+      }
+      loadedFiles.push({ name: file.name, added, skipped });
+    } catch (err) {
+      alert(`${file.name} の読み込みに失敗: ${err.message}`);
+    }
+  }
+  render();
+}
+
+function aggregate() {
+  const map = new Map();
+  for (const r of allRows) {
+    const key = r.code;
+    if (!map.has(key)) {
+      map.set(key, { code: r.code, name: r.name, set: new Set(), qty: 0, orders: new Set() });
+    }
+    const agg = map.get(key);
+    agg.qty += r.qty;
+    if (r.setCode) agg.set.add(r.setCode);
+    if (r.name && !agg.name) agg.name = r.name;
+    agg.orders.add(`${r.ticket}_${r.line}`);
+  }
+  return Array.from(map.values()).map(a => ({
+    code: a.code,
+    name: a.name,
+    set: Array.from(a.set).join(', '),
+    qty: a.qty,
+    orders: a.orders.size,
+  }));
+}
+
+function render() {
+  document.getElementById('fileList').innerHTML = loadedFiles.length === 0 ? '' :
+    loadedFiles.map(f =>
+      `<div class="file-item"><span class="name">📄 ${escapeHtml(f.name)}</span>` +
+      `<span class="meta">+${f.added}件${f.skipped ? ` (重複${f.skipped}件スキップ)` : ''}</span></div>`
+    ).join('');
+
+  const data = aggregate();
+  if (data.length === 0) {
+    document.getElementById('content').style.display = 'none';
+    document.getElementById('emptyState').style.display = 'block';
+    return;
+  }
+  document.getElementById('content').style.display = 'block';
+  document.getElementById('emptyState').style.display = 'none';
+
+  // 統計
+  const totalQty = data.reduce((s, d) => s + d.qty, 0);
+  const totalOrders = new Set(allRows.map(r => `${r.ticket}_${r.line}`)).size;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="label">欠品商品 SKU数</div><div class="value">${data.length}</div></div>
+    <div class="stat"><div class="label">合計欠品数</div><div class="value accent">${totalQty.toLocaleString()}個</div></div>
+    <div class="stat"><div class="label">欠品伝票件数</div><div class="value">${totalOrders}</div></div>
+    <div class="stat"><div class="label">読込ファイル数</div><div class="value">${loadedFiles.length}</div></div>
+  `;
+
+  const filterText = document.getElementById('filter').value.toLowerCase();
+  let filtered = data.filter(d =>
+    !filterText ||
+    d.code.toLowerCase().includes(filterText) ||
+    d.name.toLowerCase().includes(filterText) ||
+    d.set.toLowerCase().includes(filterText)
+  );
+
+  filtered.sort((a, b) => {
+    const av = a[sortKey], bv = b[sortKey];
+    let cmp;
+    if (typeof av === 'number') cmp = av - bv;
+    else cmp = String(av).localeCompare(String(bv), 'ja');
+    return sortAsc ? cmp : -cmp;
+  });
+
+  const maxQty = Math.max(...filtered.map(d => d.qty), 1);
+  document.getElementById('resultBody').innerHTML = filtered.map(d => `
+    <tr>
+      <td class="code">${escapeHtml(d.code)}</td>
+      <td>${escapeHtml(d.name)}</td>
+      <td class="num ${d.qty >= maxQty * 0.5 ? 'highlight' : ''}">${d.qty}</td>
+      <td class="num">${d.orders}</td>
+      <td class="code">${escapeHtml(d.set)}</td>
+    </tr>
+  `).join('');
+
+  // ソートインジケータ
+  document.querySelectorAll('th[data-sort]').forEach(th => {
+    th.classList.toggle('sorted', th.dataset.sort === sortKey);
+    th.classList.toggle('asc', th.dataset.sort === sortKey && sortAsc);
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function exportCsv() {
+  const data = aggregate().sort((a, b) => b.qty - a.qty);
+  const headers = ['商品コード', '商品名', 'セット商品コード', '欠品数', '伝票件数'];
+  const rows = [headers, ...data.map(d => [d.code, d.name, d.set, d.qty, d.orders])];
+  const csv = rows.map(r => r.map(c => {
+    const s = String(c);
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  }).join(',')).join('\r\n');
+  // Excel互換でBOM+UTF-8
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `欠品集計_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// イベント
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  handleFiles(Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.csv')));
+});
+fileInput.addEventListener('change', e => handleFiles(Array.from(e.target.files)));
+
+document.getElementById('filter').addEventListener('input', render);
+document.getElementById('exportCsv').addEventListener('click', exportCsv);
+document.getElementById('printBtn').addEventListener('click', () => {
+  const data = aggregate();
+  const totalQty = data.reduce((s, d) => s + d.qty, 0);
+  const totalOrders = new Set(allRows.map(r => `${r.ticket}_${r.line}`)).size;
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('printDate').textContent = `出力日時: ${dateStr}`;
+  document.getElementById('printStats').textContent = `${data.length}SKU / 合計${totalQty}個 / 伝票${totalOrders}件`;
+  window.print();
+});
+document.getElementById('clearAll').addEventListener('click', () => {
+  if (!confirm('読み込んだデータを全てクリアしますか?')) return;
+  allRows.length = 0;
+  seenKeys.clear();
+  loadedFiles.length = 0;
+  fileInput.value = '';
+  render();
+});
+
+document.querySelectorAll('th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    if (sortKey === key) sortAsc = !sortAsc;
+    else { sortKey = key; sortAsc = false; }
+    render();
+  });
+});
+</script>
+</body>
+</html>

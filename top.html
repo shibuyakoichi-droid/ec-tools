@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>mofmofu 分析ツール</title>
+<title>エル・アイ・シー 社内ポータル</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -42,9 +42,9 @@ body::before {
 }
 
 .container {
-  max-width: 860px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 80px 24px 60px;
+  padding: 48px 32px 60px;
   position: relative;
   z-index: 1;
 }
@@ -83,7 +83,7 @@ h1 span {
   color: var(--muted);
   line-height: 1.7;
   max-width: 480px;
-  margin-bottom: 56px;
+  margin-bottom: 36px;
   opacity: 0;
   animation: fadeUp .6s .2s ease forwards;
 }
@@ -99,8 +99,8 @@ h1 span {
 
 /* Tool cards */
 .tools {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 16px;
 }
 
@@ -128,6 +128,7 @@ h1 span {
 .tool-card:nth-child(5) { animation-delay: .7s; }
 .tool-card:nth-child(6) { animation-delay: .8s; }
 .tool-card:nth-child(7) { animation-delay: .9s; }
+.tool-card:nth-child(8) { animation-delay: 1.0s; }
 
 .tool-card::before {
   content: '';
@@ -257,7 +258,12 @@ h1 span {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@media (min-width: 768px) {
+  .tools { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 600px) {
+  .container { padding: 32px 16px 40px; }
   .tool-card { padding: 20px; gap: 16px; }
   .tool-icon { width: 44px; height: 44px; font-size: 20px; }
   .footer { flex-direction: column; gap: 8px; text-align: center; }
@@ -267,7 +273,7 @@ h1 span {
 <body>
 <div class="container">
 
-  <div class="eyebrow">mofmofu / 社内ツール集</div>
+  <div class="eyebrow">株式会社エル・アイ・シー / 社内ポータル</div>
 
   <h1>業務を、<br><span>もっとはやく。</span></h1>
 
@@ -374,6 +380,23 @@ h1 span {
   <div class="section-label" style="margin-top:40px;">📦 生産管理</div>
   <div class="tools">
 
+    <a href="genba/dashboard.html" class="tool-card indigo">
+      <div class="tool-icon">🏭</div>
+      <div class="tool-body">
+        <div class="tool-name">工程管理ダッシュボード</div>
+        <div class="tool-desc">
+          ベビーレッグの縫製・検品・梱包など工程ごとの進捗をリアルタイム管理。<br>
+          工場別・品番別の現在状況を一覧で把握できます。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">工程進捗</span>
+          <span class="tag">工場別管理</span>
+          <span class="tag">リアルタイム</span>
+        </div>
+      </div>
+      <div class="tool-arrow">→</div>
+    </a>
+
     <a href="pipeline.html" class="tool-card pink">
       <div class="tool-icon">🚀</div>
       <div class="tool-body">
@@ -468,6 +491,24 @@ h1 span {
       <div class="tool-arrow">→</div>
     </a>
 
+    <a href="shortage_summary.html" class="tool-card pink">
+      <div class="tool-icon">⚠️</div>
+      <div class="tool-body">
+        <div class="tool-name">欠品集計</div>
+        <div class="tool-desc">
+          欠品情報CSVを商品コード単位で集計・印刷。<br>
+          複数ファイル投入OK・伝票重複を自動除外。CSV書き出しにも対応。
+        </div>
+        <div class="tool-tags">
+          <span class="tag">CSVドロップ</span>
+          <span class="tag">SKU別集計</span>
+          <span class="tag">重複自動除外</span>
+          <span class="tag">印刷対応</span>
+        </div>
+      </div>
+      <div class="tool-arrow">→</div>
+    </a>
+
   </div>
 
   <div class="section-label" style="margin-top:40px;">📦 納品管理</div>
@@ -555,7 +596,7 @@ h1 span {
   </div>
 
   <div class="footer">
-    <div class="footer-brand">MOFMOFU / 株式会社エル・アイ・シー</div>
+    <div class="footer-brand">株式会社エル・アイ・シー</div>
     <div class="footer-note">社内利用限定ツール</div>
   </div>
 
