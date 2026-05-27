@@ -13,7 +13,9 @@
     --accent: #c2410c;
     --accent-soft: #fef2e8;
     --warn: #d97706;
+    --warn-soft: #fffbeb;
     --ok: #047857;
+    --ok-soft: #ecfdf5;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -23,40 +25,56 @@
     padding: 24px;
     line-height: 1.6;
   }
-  .container { max-width: 1100px; margin: 0 auto; }
+  .container { max-width: 1200px; margin: 0 auto; }
   header { margin-bottom: 24px; }
-  h1 {
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
+  h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
   .subtitle { color: var(--sub); font-size: 13px; margin-top: 4px; }
 
+  .drop-zones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
   .drop-zone {
     display: block;
     background: var(--card);
     border: 2px dashed var(--line);
     border-radius: 12px;
-    padding: 40px 24px;
+    padding: 28px 20px;
     text-align: center;
     cursor: pointer;
     transition: all 0.15s;
-    margin-bottom: 16px;
   }
-  .drop-zone:hover, .drop-zone.dragover {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-  }
-  .drop-zone p { color: var(--sub); font-size: 14px; }
-  .drop-zone strong { color: var(--ink); display: block; margin-bottom: 6px; font-size: 15px; }
+  .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent); background: var(--accent-soft); }
+  .drop-zone.loaded { border-color: var(--ok); background: var(--ok-soft); }
+  .drop-zone p { color: var(--sub); font-size: 13px; }
+  .drop-zone strong { color: var(--ink); display: block; margin-bottom: 6px; font-size: 14px; }
   .drop-zone input { display: none; }
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .tag-required { background: var(--accent-soft); color: var(--accent); }
+  .tag-optional { background: #f0f9ff; color: #0369a1; }
+  .tag-loaded { background: var(--ok-soft); color: var(--ok); }
 
   .toolbar {
     display: flex;
     gap: 8px;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     flex-wrap: wrap;
+  }
+  .cat-filter {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
   }
   .btn {
     background: var(--ink);
@@ -71,6 +89,21 @@
   .btn:hover { opacity: 0.85; }
   .btn.secondary { background: white; color: var(--ink); border: 1px solid var(--line); }
   .btn.danger { background: white; color: var(--accent); border: 1px solid var(--line); }
+  .cat-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: white;
+    color: var(--sub);
+    font-family: inherit;
+    transition: all 0.1s;
+  }
+  .cat-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .cat-btn.active { background: var(--ink); color: white; border-color: var(--ink); }
+  .cat-btn .count { font-size: 11px; opacity: 0.75; margin-left: 4px; }
 
   .file-list {
     background: var(--card);
@@ -93,7 +126,7 @@
 
   .stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 12px;
     margin-bottom: 16px;
   }
@@ -106,6 +139,7 @@
   .stat .label { font-size: 11px; color: var(--sub); text-transform: uppercase; letter-spacing: 0.05em; }
   .stat .value { font-size: 24px; font-weight: 600; margin-top: 4px; }
   .stat .value.accent { color: var(--accent); }
+  .stat .value.warn { color: var(--warn); }
 
   table {
     width: 100%;
@@ -117,11 +151,7 @@
     font-size: 13px;
   }
   thead { background: #fafaf7; }
-  th, td {
-    padding: 10px 14px;
-    text-align: left;
-    border-bottom: 1px solid var(--line);
-  }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); }
   th {
     font-weight: 600;
     font-size: 12px;
@@ -130,12 +160,18 @@
     letter-spacing: 0.03em;
     cursor: pointer;
     user-select: none;
+    white-space: nowrap;
   }
   th:hover { color: var(--ink); }
   th.sorted::after { content: " ↓"; color: var(--accent); }
   th.sorted.asc::after { content: " ↑"; }
   td.num { text-align: right; font-variant-numeric: tabular-nums; }
-  td.num.highlight { color: var(--accent); font-weight: 600; }
+  td.num.shortage { color: var(--accent); font-weight: 600; }
+  td.diff { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  td.diff.neg { color: var(--accent); }
+  td.diff.zero { color: var(--warn); }
+  td.diff.pos { color: var(--ok); }
+  td.diff.none { color: var(--sub); }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: #fafaf7; }
   .code { font-family: "SF Mono", Monaco, Consolas, monospace; font-size: 12px; color: var(--sub); }
@@ -153,76 +189,37 @@
     border: 1px solid var(--line);
     border-radius: 6px;
     font-size: 13px;
-    width: 240px;
+    width: 220px;
     font-family: inherit;
   }
   .filter:focus { outline: none; border-color: var(--accent); }
 
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    background: var(--accent-soft);
-    color: var(--accent);
-    border-radius: 10px;
-    font-size: 11px;
-    font-weight: 500;
-  }
+  .print-header { display: none; }
 
-  .print-header {
-    display: none;
-  }
-
-  /* 印刷用スタイル */
   @media print {
-    body {
-      background: white;
-      padding: 0;
-      font-size: 8pt;
-    }
+    body { background: white; padding: 0; font-size: 8pt; }
     .container { max-width: 100%; }
-    header, .drop-zone, .file-list, .toolbar, .stats, .empty {
-      display: none !important;
-    }
+    header, .drop-zones, .file-list, .toolbar, .cat-filter, .stats, .empty { display: none !important; }
     .print-header {
       display: block;
       margin-bottom: 8px;
       padding-bottom: 6px;
       border-bottom: 2px solid #000;
     }
-    .print-header h2 {
-      font-size: 12pt;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-    .print-header .meta {
-      font-size: 7pt;
-      color: #333;
-      display: flex;
-      gap: 12px;
-    }
+    .print-header h2 { font-size: 12pt; font-weight: 600; margin-bottom: 2px; }
+    .print-header .meta { font-size: 7pt; color: #333; display: flex; gap: 12px; }
     #content { display: block !important; }
-    table {
-      border: 1px solid #000;
-      border-radius: 0;
-      font-size: 7.5pt;
-      page-break-inside: auto;
-    }
-    thead { background: #f0f0f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    thead { display: table-header-group; }
+    table { border: 1px solid #000; border-radius: 0; font-size: 7.5pt; page-break-inside: auto; }
+    thead { background: #f0f0f0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; display: table-header-group; }
     tr { page-break-inside: avoid; }
-    th, td {
-      padding: 3px 6px;
-      border-bottom: 1px solid #bbb;
-    }
-    th {
-      color: #000;
-      font-size: 7pt;
-      cursor: default;
-    }
+    th, td { padding: 3px 6px; border-bottom: 1px solid #bbb; }
+    th { color: #000; font-size: 7pt; cursor: default; }
     th::after { content: "" !important; }
-    td.num.highlight { color: #000; font-weight: 700; }
     .code { color: #333; font-size: 7pt; }
     tr:hover td { background: transparent; }
+    td.diff.neg { color: #c00; }
+    td.diff.zero { color: #a60; }
+    td.diff.pos { color: #060; }
   }
 </style>
 </head>
@@ -230,14 +227,23 @@
 <div class="container">
   <header>
     <h1>欠品集計ツール</h1>
-    <p class="subtitle">欠品情報CSV(CROSS MALL形式)を商品コード単位で集計します。複数ファイル投入OK・伝票重複は自動除外。</p>
+    <p class="subtitle">欠品CSV・在庫実績CSVをドロップ。商品名（カラー・サイズ）と在庫数を照合。カテゴリ別印刷対応。</p>
   </header>
 
-  <label class="drop-zone" id="dropZone" for="fileInput">
-    <strong>📥 CSVをドロップ または クリックして選択</strong>
-    <p>欠品情報CSV(Shift_JIS / UTF-8 自動判定)・複数ファイル可</p>
-    <input type="file" id="fileInput" accept=".csv" multiple>
-  </label>
+  <div class="drop-zones">
+    <label class="drop-zone" id="shortageZone" for="shortageInput">
+      <span class="tag tag-required" id="shortageTag">必須</span>
+      <strong>📥 欠品情報CSV</strong>
+      <p>CROSS MALL形式・複数ファイル可<br>Shift_JIS / UTF-8 自動判定</p>
+      <input type="file" id="shortageInput" accept=".csv" multiple>
+    </label>
+    <label class="drop-zone" id="stockZone" for="stockInput">
+      <span class="tag tag-optional" id="stockTag">任意</span>
+      <strong>📦 在庫実績CSV</strong>
+      <p>商品名（カラー・サイズ）と在庫数を補完<br>ロケーション別在庫を自動集計</p>
+      <input type="file" id="stockInput" accept=".csv">
+    </label>
+  </div>
 
   <div class="file-list" id="fileList"></div>
 
@@ -253,17 +259,22 @@
     <div class="toolbar">
       <input type="text" id="filter" class="filter" placeholder="商品コード・商品名で絞り込み…">
       <button class="btn" id="printBtn">🖨️ 印刷</button>
+      <button class="btn secondary" id="printCatBtn">📋 カテゴリ別印刷</button>
       <button class="btn secondary" id="exportCsv">CSV書き出し</button>
       <button class="btn danger" id="clearAll">全クリア</button>
     </div>
+
+    <div class="cat-filter" id="catFilter"></div>
 
     <div class="stats" id="stats"></div>
     <table id="resultTable">
       <thead>
         <tr>
           <th data-sort="code">商品コード</th>
-          <th data-sort="name">商品名</th>
+          <th data-sort="name">商品名（カラー・サイズ）</th>
           <th data-sort="qty" class="sorted">欠品数</th>
+          <th data-sort="stock">在庫数</th>
+          <th data-sort="diff">差分</th>
           <th data-sort="orders">伝票件数</th>
           <th data-sort="set">セット商品コード</th>
         </tr>
@@ -278,33 +289,45 @@
 </div>
 
 <script>
-// 全行データ(重複除外後)を保持
 const allRows = [];
-const seenKeys = new Set(); // 伝票No+行番号で重複判定
+const seenKeys = new Set();
 const loadedFiles = [];
+const stockMap = new Map();
+let stockLoaded = false;
 let sortKey = 'qty';
 let sortAsc = false;
+let activeCategory = '全て';
 
-// 文字コード自動判定読み込み(Shift_JIS優先 → UTF-8フォールバック)
+const CATEGORIES = [
+  { label: 'ベビー系',          match: n => n.includes('ベビー') },
+  { label: 'レッグウォーマー系', match: n => n.includes('レッグウォーマー') },
+  { label: '腹巻系',            match: n => n.includes('腹巻') },
+  { label: 'アームカバー系',     match: n => n.includes('アームカバー') },
+  { label: 'その他',            match: () => true },
+];
+
+function getCategory(name) {
+  for (const cat of CATEGORIES) {
+    if (cat.match(name)) return cat.label;
+  }
+  return 'その他';
+}
+
 function readCSV(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const buffer = e.target.result;
-      // まずShift_JIS(CP932)で試す
       let text;
       try {
         text = new TextDecoder('shift_jis', { fatal: false }).decode(buffer);
-        // BOMチェックでUTF-8の可能性を見る
         if (text.charCodeAt(0) === 0xFEFF || /^[\x20-\x7e　-鿿＀-￯\r\n,]+/.test(text.slice(0, 200)) === false) {
-          // 文字化けっぽい→UTF-8で再試行
           const utf8 = new TextDecoder('utf-8', { fatal: false }).decode(buffer);
-          if (utf8.includes('商品コード') || utf8.includes('欠品')) text = utf8;
+          if (utf8.includes('商品コード') || utf8.includes('欠品') || utf8.includes('在庫')) text = utf8;
         }
       } catch (err) {
         text = new TextDecoder('utf-8').decode(buffer);
       }
-      // BOM除去
       if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
       resolve(text);
     };
@@ -313,7 +336,6 @@ function readCSV(file) {
   });
 }
 
-// シンプルCSVパーサ(クォート対応)
 function parseCSV(text) {
   const rows = [];
   let cur = [], field = '', inQuote = false;
@@ -335,13 +357,46 @@ function parseCSV(text) {
   return rows.filter(r => r.length > 1 || (r.length === 1 && r[0].trim() !== ''));
 }
 
-async function handleFiles(files) {
+async function handleStockFile(file) {
+  try {
+    const text = await readCSV(file);
+    const rows = parseCSV(text);
+    if (rows.length < 2) return;
+    const headers = rows[0].map(h => h.trim());
+    const codeIdx = headers.indexOf('商品コード');
+    const nameIdx = headers.indexOf('商品名');
+    const stockIdx = headers.indexOf('有効在庫数');
+    if (codeIdx === -1 || stockIdx === -1) {
+      alert(`${file.name}: 「商品コード」「有効在庫数」列が見つかりません`);
+      return;
+    }
+    stockMap.clear();
+    for (let i = 1; i < rows.length; i++) {
+      const r = rows[i];
+      if (!r[codeIdx]) continue;
+      const code = r[codeIdx].trim();
+      const name = nameIdx >= 0 ? (r[nameIdx] || '').trim() : '';
+      const stock = parseInt(r[stockIdx]) || 0;
+      if (!stockMap.has(code)) stockMap.set(code, { name, stock: 0 });
+      stockMap.get(code).stock += stock;
+    }
+    stockLoaded = true;
+    document.getElementById('stockZone').classList.add('loaded');
+    document.getElementById('stockTag').className = 'tag tag-loaded';
+    document.getElementById('stockTag').textContent = `✓ 読込済 (${stockMap.size}SKU)`;
+    loadedFiles.push({ name: file.name, type: 'stock', added: stockMap.size });
+    render();
+  } catch (err) {
+    alert(`${file.name} の読み込みに失敗: ${err.message}`);
+  }
+}
+
+async function handleShortageFiles(files) {
   for (const file of files) {
     try {
       const text = await readCSV(file);
       const rows = parseCSV(text);
       if (rows.length < 2) continue;
-
       const headers = rows[0].map(h => h.trim());
       const idx = {
         ticket: headers.indexOf('出荷伝票No'),
@@ -350,14 +405,11 @@ async function handleFiles(files) {
         code: headers.indexOf('商品コード'),
         name: headers.indexOf('商品名'),
         qty: headers.indexOf('欠品数'),
-        expiry: headers.indexOf('賞味期限'),
       };
-
       if (idx.code === -1 || idx.qty === -1) {
         alert(`${file.name}: 「商品コード」「欠品数」列が見つかりません`);
         continue;
       }
-
       let added = 0, skipped = 0;
       for (let i = 1; i < rows.length; i++) {
         const r = rows[i];
@@ -369,14 +421,13 @@ async function handleFiles(files) {
           ticket: r[idx.ticket] || '',
           line: r[idx.line] || '',
           setCode: idx.setCode >= 0 ? (r[idx.setCode] || '') : '',
-          code: r[idx.code],
+          code: r[idx.code].trim(),
           name: idx.name >= 0 ? (r[idx.name] || '').trim() : '',
           qty: parseInt(r[idx.qty]) || 0,
-          expiry: idx.expiry >= 0 ? (r[idx.expiry] || '') : '',
         });
         added++;
       }
-      loadedFiles.push({ name: file.name, added, skipped });
+      loadedFiles.push({ name: file.name, type: 'shortage', added, skipped });
     } catch (err) {
       alert(`${file.name} の読み込みに失敗: ${err.message}`);
     }
@@ -387,31 +438,82 @@ async function handleFiles(files) {
 function aggregate() {
   const map = new Map();
   for (const r of allRows) {
-    const key = r.code;
-    if (!map.has(key)) {
-      map.set(key, { code: r.code, name: r.name, set: new Set(), qty: 0, orders: new Set() });
+    if (!map.has(r.code)) {
+      map.set(r.code, { code: r.code, name: r.name, set: new Set(), qty: 0, orders: new Set() });
     }
-    const agg = map.get(key);
+    const agg = map.get(r.code);
     agg.qty += r.qty;
     if (r.setCode) agg.set.add(r.setCode);
     if (r.name && !agg.name) agg.name = r.name;
     agg.orders.add(`${r.ticket}_${r.line}`);
   }
-  return Array.from(map.values()).map(a => ({
-    code: a.code,
-    name: a.name,
-    set: Array.from(a.set).join(', '),
-    qty: a.qty,
-    orders: a.orders.size,
-  }));
+  return Array.from(map.values()).map(a => {
+    const sm = stockMap.get(a.code);
+    const stock = sm ? sm.stock : null;
+    const name = sm ? sm.name : a.name;
+    return {
+      code: a.code,
+      name,
+      category: getCategory(name),
+      set: Array.from(a.set).join(', '),
+      qty: a.qty,
+      stock,
+      diff: stock !== null ? stock - a.qty : null,
+      orders: a.orders.size,
+    };
+  });
+}
+
+function buildCatFilter(data) {
+  const counts = { '全て': data.length };
+  for (const cat of CATEGORIES) counts[cat.label] = 0;
+  for (const d of data) counts[d.category] = (counts[d.category] || 0) + 1;
+
+  const labels = ['全て', ...CATEGORIES.map(c => c.label)];
+  document.getElementById('catFilter').innerHTML = labels.map(label =>
+    `<button class="cat-btn ${activeCategory === label ? 'active' : ''}" data-cat="${label}">
+      ${label}<span class="count">${counts[label] || 0}</span>
+    </button>`
+  ).join('');
+
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeCategory = btn.dataset.cat;
+      render();
+    });
+  });
+}
+
+function renderRows(filtered) {
+  const maxQty = Math.max(...filtered.map(d => d.qty), 1);
+  return filtered.map(d => {
+    let diffClass = 'none', diffText = '—';
+    if (d.diff !== null) {
+      diffClass = d.diff < 0 ? 'neg' : d.diff === 0 ? 'zero' : 'pos';
+      diffText = (d.diff > 0 ? '+' : '') + d.diff;
+    }
+    return `
+      <tr>
+        <td class="code">${escapeHtml(d.code)}</td>
+        <td>${escapeHtml(d.name)}</td>
+        <td class="num ${d.qty >= maxQty * 0.5 ? 'shortage' : ''}">${d.qty}</td>
+        <td class="num">${d.stock !== null ? d.stock.toLocaleString() : '—'}</td>
+        <td class="diff ${diffClass}">${diffText}</td>
+        <td class="num">${d.orders}</td>
+        <td class="code">${escapeHtml(d.set)}</td>
+      </tr>`;
+  }).join('');
 }
 
 function render() {
   document.getElementById('fileList').innerHTML = loadedFiles.length === 0 ? '' :
-    loadedFiles.map(f =>
-      `<div class="file-item"><span class="name">📄 ${escapeHtml(f.name)}</span>` +
-      `<span class="meta">+${f.added}件${f.skipped ? ` (重複${f.skipped}件スキップ)` : ''}</span></div>`
-    ).join('');
+    loadedFiles.map(f => {
+      const icon = f.type === 'stock' ? '📦' : '📄';
+      const label = f.type === 'stock'
+        ? `在庫マスタ ${f.added}SKU読込`
+        : `+${f.added}件${f.skipped ? ` (重複${f.skipped}件スキップ)` : ''}`;
+      return `<div class="file-item"><span class="name">${icon} ${escapeHtml(f.name)}</span><span class="meta">${label}</span></div>`;
+    }).join('');
 
   const data = aggregate();
   if (data.length === 0) {
@@ -422,44 +524,42 @@ function render() {
   document.getElementById('content').style.display = 'block';
   document.getElementById('emptyState').style.display = 'none';
 
-  // 統計
+  buildCatFilter(data);
+
   const totalQty = data.reduce((s, d) => s + d.qty, 0);
   const totalOrders = new Set(allRows.map(r => `${r.ticket}_${r.line}`)).size;
-  document.getElementById('stats').innerHTML = `
-    <div class="stat"><div class="label">欠品商品 SKU数</div><div class="value">${data.length}</div></div>
+  const countNeg = stockLoaded ? data.filter(d => d.diff !== null && d.diff < 0).length : null;
+
+  let statsHtml = `
+    <div class="stat"><div class="label">欠品 SKU数</div><div class="value">${data.length}</div></div>
     <div class="stat"><div class="label">合計欠品数</div><div class="value accent">${totalQty.toLocaleString()}個</div></div>
     <div class="stat"><div class="label">欠品伝票件数</div><div class="value">${totalOrders}</div></div>
-    <div class="stat"><div class="label">読込ファイル数</div><div class="value">${loadedFiles.length}</div></div>
   `;
+  if (countNeg !== null) {
+    statsHtml += `<div class="stat"><div class="label">在庫不足SKU</div><div class="value accent">${countNeg}</div></div>`;
+  }
+  document.getElementById('stats').innerHTML = statsHtml;
 
   const filterText = document.getElementById('filter').value.toLowerCase();
-  let filtered = data.filter(d =>
-    !filterText ||
-    d.code.toLowerCase().includes(filterText) ||
-    d.name.toLowerCase().includes(filterText) ||
-    d.set.toLowerCase().includes(filterText)
-  );
+  let filtered = data.filter(d => {
+    const textMatch = !filterText ||
+      d.code.toLowerCase().includes(filterText) ||
+      d.name.toLowerCase().includes(filterText) ||
+      d.set.toLowerCase().includes(filterText);
+    const catMatch = activeCategory === '全て' || d.category === activeCategory;
+    return textMatch && catMatch;
+  });
 
   filtered.sort((a, b) => {
-    const av = a[sortKey], bv = b[sortKey];
-    let cmp;
-    if (typeof av === 'number') cmp = av - bv;
-    else cmp = String(av).localeCompare(String(bv), 'ja');
+    let av = a[sortKey], bv = b[sortKey];
+    if (av === null) av = sortAsc ? Infinity : -Infinity;
+    if (bv === null) bv = sortAsc ? Infinity : -Infinity;
+    let cmp = typeof av === 'number' ? av - bv : String(av).localeCompare(String(bv), 'ja');
     return sortAsc ? cmp : -cmp;
   });
 
-  const maxQty = Math.max(...filtered.map(d => d.qty), 1);
-  document.getElementById('resultBody').innerHTML = filtered.map(d => `
-    <tr>
-      <td class="code">${escapeHtml(d.code)}</td>
-      <td>${escapeHtml(d.name)}</td>
-      <td class="num ${d.qty >= maxQty * 0.5 ? 'highlight' : ''}">${d.qty}</td>
-      <td class="num">${d.orders}</td>
-      <td class="code">${escapeHtml(d.set)}</td>
-    </tr>
-  `).join('');
+  document.getElementById('resultBody').innerHTML = renderRows(filtered);
 
-  // ソートインジケータ
   document.querySelectorAll('th[data-sort]').forEach(th => {
     th.classList.toggle('sorted', th.dataset.sort === sortKey);
     th.classList.toggle('asc', th.dataset.sort === sortKey && sortAsc);
@@ -472,13 +572,17 @@ function escapeHtml(s) {
 
 function exportCsv() {
   const data = aggregate().sort((a, b) => b.qty - a.qty);
-  const headers = ['商品コード', '商品名', 'セット商品コード', '欠品数', '伝票件数'];
-  const rows = [headers, ...data.map(d => [d.code, d.name, d.set, d.qty, d.orders])];
+  const headers = ['カテゴリ', '商品コード', '商品名', '欠品数', '在庫数', '差分', '伝票件数', 'セット商品コード'];
+  const rows = [headers, ...data.map(d => [
+    d.category, d.code, d.name, d.qty,
+    d.stock !== null ? d.stock : '',
+    d.diff !== null ? d.diff : '',
+    d.orders, d.set
+  ])];
   const csv = rows.map(r => r.map(c => {
     const s = String(c);
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   }).join(',')).join('\r\n');
-  // Excel互換でBOM+UTF-8
   const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -488,21 +592,103 @@ function exportCsv() {
   URL.revokeObjectURL(url);
 }
 
-// イベント
-const dropZone = document.getElementById('dropZone');
-const fileInput = document.getElementById('fileInput');
+function printByCategory() {
+  const data = aggregate();
+  if (data.length === 0) return;
 
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropZone.classList.remove('dragover');
-  handleFiles(Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.csv')));
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+  const thRow = `<tr>
+    <th>商品コード</th><th>商品名（カラー・サイズ）</th>
+    <th style="text-align:right">欠品数</th><th style="text-align:right">在庫数</th>
+    <th style="text-align:right">差分</th><th style="text-align:right">伝票件数</th>
+    <th>セット商品コード</th>
+  </tr>`;
+
+  const catLabels = CATEGORIES.map(c => c.label);
+  const sections = catLabels.map((label, idx) => {
+    const items = data.filter(d => d.category === label).sort((a, b) => b.qty - a.qty);
+    if (items.length === 0) return '';
+    const isLast = idx === catLabels.length - 1;
+    const totalQty = items.reduce((s, d) => s + d.qty, 0);
+    const rows = items.map(d => {
+      let diffStr = '—', diffColor = '#666';
+      if (d.diff !== null) {
+        diffStr = (d.diff > 0 ? '+' : '') + d.diff;
+        diffColor = d.diff < 0 ? '#c2410c' : d.diff === 0 ? '#d97706' : '#047857';
+      }
+      return `<tr>
+        <td style="font-family:monospace;font-size:7pt;color:#555">${escapeHtml(d.code)}</td>
+        <td>${escapeHtml(d.name)}</td>
+        <td style="text-align:right;font-weight:600">${d.qty}</td>
+        <td style="text-align:right">${d.stock !== null ? d.stock : '—'}</td>
+        <td style="text-align:right;font-weight:600;color:${diffColor}">${diffStr}</td>
+        <td style="text-align:right">${d.orders}</td>
+        <td style="font-family:monospace;font-size:7pt;color:#555">${escapeHtml(d.set)}</td>
+      </tr>`;
+    }).join('');
+    return `
+      <div style="page-break-after:${isLast ? 'avoid' : 'always'}">
+        <div style="border-bottom:2px solid #000;padding-bottom:4px;margin-bottom:8px;">
+          <div style="font-size:13pt;font-weight:700">${label} 欠品一覧</div>
+          <div style="font-size:7pt;color:#444;display:flex;gap:16px;margin-top:2px;">
+            <span>出力: ${dateStr}</span>
+            <span>${items.length}SKU / 合計${totalQty}個</span>
+          </div>
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:8pt;border:1px solid #999;">
+          <thead style="background:#eee">${thRow}</thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>`;
+  }).filter(Boolean);
+
+  if (sections.length === 0) return;
+
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
+    <title>欠品一覧（カテゴリ別）</title>
+    <style>
+      * { box-sizing:border-box; margin:0; padding:0; }
+      body { font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif; padding:12px; }
+      table th,table td { padding:3px 7px; border-bottom:1px solid #ccc; text-align:left; }
+      table thead th { font-size:7pt; font-weight:600; color:#333; }
+      @media print { body{padding:0} }
+    </style></head><body>
+    ${sections.join('')}
+    <script>window.onload=()=>{window.print();}<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+// イベント
+const shortageZone = document.getElementById('shortageZone');
+const shortageInput = document.getElementById('shortageInput');
+const stockZone = document.getElementById('stockZone');
+const stockInput = document.getElementById('stockInput');
+
+shortageZone.addEventListener('dragover', e => { e.preventDefault(); shortageZone.classList.add('dragover'); });
+shortageZone.addEventListener('dragleave', () => shortageZone.classList.remove('dragover'));
+shortageZone.addEventListener('drop', e => {
+  e.preventDefault(); shortageZone.classList.remove('dragover');
+  handleShortageFiles(Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.csv')));
 });
-fileInput.addEventListener('change', e => handleFiles(Array.from(e.target.files)));
+shortageInput.addEventListener('change', e => handleShortageFiles(Array.from(e.target.files)));
+
+stockZone.addEventListener('dragover', e => { e.preventDefault(); stockZone.classList.add('dragover'); });
+stockZone.addEventListener('dragleave', () => stockZone.classList.remove('dragover'));
+stockZone.addEventListener('drop', e => {
+  e.preventDefault(); stockZone.classList.remove('dragover');
+  const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.csv'));
+  if (files.length > 0) handleStockFile(files[0]);
+});
+stockInput.addEventListener('change', e => { if (e.target.files[0]) handleStockFile(e.target.files[0]); });
 
 document.getElementById('filter').addEventListener('input', render);
 document.getElementById('exportCsv').addEventListener('click', exportCsv);
+document.getElementById('printCatBtn').addEventListener('click', printByCategory);
+
 document.getElementById('printBtn').addEventListener('click', () => {
   const data = aggregate();
   const totalQty = data.reduce((s, d) => s + d.qty, 0);
@@ -513,12 +699,22 @@ document.getElementById('printBtn').addEventListener('click', () => {
   document.getElementById('printStats').textContent = `${data.length}SKU / 合計${totalQty}個 / 伝票${totalOrders}件`;
   window.print();
 });
+
 document.getElementById('clearAll').addEventListener('click', () => {
   if (!confirm('読み込んだデータを全てクリアしますか?')) return;
   allRows.length = 0;
   seenKeys.clear();
   loadedFiles.length = 0;
-  fileInput.value = '';
+  stockMap.clear();
+  stockLoaded = false;
+  activeCategory = '全て';
+  shortageInput.value = '';
+  stockInput.value = '';
+  document.getElementById('shortageTag').className = 'tag tag-required';
+  document.getElementById('shortageTag').textContent = '必須';
+  stockZone.classList.remove('loaded');
+  document.getElementById('stockTag').className = 'tag tag-optional';
+  document.getElementById('stockTag').textContent = '任意';
   render();
 });
 
