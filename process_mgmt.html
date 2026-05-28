@@ -60,6 +60,9 @@ tr:hover td{background:#faf9f7}
 .badge-naishoku{background:#f3eafd;color:#6b2fa0}
 .badge-stock{background:#eaf3de;color:#3a6d10}
 .qty{font-weight:600}
+.stale-date{color:#c06000;font-weight:600}
+.stale-row td{background:#fffaf0 !important}
+.stale-badge{display:inline-block;font-size:10px;background:#fff3e0;color:#c06000;border:1px solid #f5c06b;border-radius:4px;padding:1px 5px;margin-left:4px;white-space:nowrap}
 .unit{font-size:10px;font-weight:400;color:#aaa;margin-left:2px}
 .empty{text-align:center;padding:40px;color:#aaa;font-size:13px}
 .spinner-wrap{display:flex;align-items:center;justify-content:center;padding:40px;color:#aaa;gap:8px}
@@ -142,6 +145,7 @@ tr:hover td{background:#faf9f7}
       <select id="map-loc" onchange="applyFilter()">
         <option value="">場所: すべて</option>
       </select>
+      <button class="btn sm" id="stale-btn" onclick="toggleStaleFilter()" title="最終更新から2ヶ月以上経過したものだけ表示">🟠 停滞中のみ</button>
       <button class="btn sm" onclick="mergeDuplicates()" style="margin-left:auto;color:#888">重複をまとめる</button>
     </div>
 
@@ -157,7 +161,9 @@ tr:hover td{background:#faf9f7}
       <table>
         <thead><tr>
           <th>生地番号</th><th>カラー</th>
-          <th class="r">数量</th><th>現在地</th><th>工程</th><th>メモ</th><th></th>
+          <th class="r">数量</th><th>現在地</th><th>工程</th>
+          <th id="fabric-sort-th" onclick="toggleSort('fabric')" style="cursor:pointer;user-select:none">最終更新 <span id="fabric-sort-icon" style="color:#aaa;font-size:10px"></span></th>
+          <th>メモ</th><th></th>
         </tr></thead>
         <tbody id="fabric-tbody"></tbody>
       </table>
@@ -175,7 +181,9 @@ tr:hover td{background:#faf9f7}
       <table>
         <thead><tr>
           <th>品番</th><th>商品名</th>
-          <th class="r">数量</th><th>現在地</th><th>工程</th><th></th>
+          <th class="r">数量</th><th>現在地</th><th>工程</th>
+          <th id="product-sort-th" onclick="toggleSort('product')" style="cursor:pointer;user-select:none">最終更新 <span id="product-sort-icon" style="color:#aaa;font-size:10px"></span></th>
+          <th></th>
         </tr></thead>
         <tbody id="product-tbody"></tbody>
       </table>
@@ -446,8 +454,59 @@ const sb=supabase.createClient(SB_URL,SB_KEY);
 const PROC_LABEL={knit:'編み',dye:'染色',print:'プリント',cut:'裁断',sew:'縫製',inner:'内職',stock:'実在庫',socks:'靴下',yarn:'糸',other:'その他'};
 const PROC_BADGE={knit:'badge-ami',dye:'badge-some',print:'badge-some',cut:'badge-sai',sew:'badge-hoso',inner:'badge-naishoku',stock:'badge-stock',socks:'badge-hoso',yarn:'badge-some',other:'badge-stock'};
 const FABRIC_PROCS=['knit','dye']; // 生地工程（反単位）
+const STALE_DAYS=60; // 2ヶ月
 
 let locations=[], fabrics=[], products=[], logs=[], master=[];
+let showStaleOnly=false;
+let fabricSortDir=null; // null=デフォルト順, 'asc'=古い順, 'desc'=新しい順
+let productSortDir=null;
+
+function toggleSort(type){
+  if(type==='fabric'){
+    fabricSortDir=fabricSortDir==='asc'?'desc':fabricSortDir==='desc'?null:'asc';
+    const icon=document.getElementById('fabric-sort-icon');
+    icon.textContent=fabricSortDir==='asc'?'▲':fabricSortDir==='desc'?'▼':'';
+    const th=document.getElementById('fabric-sort-th');
+    th.style.color=fabricSortDir?'#1a1a1a':'';
+  } else {
+    productSortDir=productSortDir==='asc'?'desc':productSortDir==='desc'?null:'asc';
+    const icon=document.getElementById('product-sort-icon');
+    icon.textContent=productSortDir==='asc'?'▲':productSortDir==='desc'?'▼':'';
+    const th=document.getElementById('product-sort-th');
+    th.style.color=productSortDir?'#1a1a1a':'';
+  }
+  applyFilter();
+}
+
+function isStale(updated_at){
+  if(!updated_at) return true;
+  return (Date.now()-new Date(updated_at))/(1000*86400)>=STALE_DAYS;
+}
+function daysSince(updated_at){
+  if(!updated_at) return null;
+  return Math.floor((Date.now()-new Date(updated_at))/(1000*86400));
+}
+function fmtDate(updated_at){
+  if(!updated_at) return '—';
+  const d=new Date(updated_at);
+  return `${d.getMonth()+1}/${String(d.getDate()).padStart(2,'0')}`;
+}
+function renderDateCell(updated_at){
+  if(!updated_at) return '<td style="color:#ccc;font-size:12px">—</td>';
+  const days=daysSince(updated_at);
+  const stale=days>=STALE_DAYS;
+  const label=fmtDate(updated_at);
+  const daysStr=stale?` <span class="stale-badge">${days}日</span>`:(days>=30?` <span style="font-size:11px;color:#aaa">${days}日</span>`:'');
+  return `<td style="font-size:12px;white-space:nowrap"><span class="${stale?'stale-date':''}">${label}</span>${daysStr}</td>`;
+}
+function toggleStaleFilter(){
+  showStaleOnly=!showStaleOnly;
+  const btn=document.getElementById('stale-btn');
+  btn.style.background=showStaleOnly?'#b86a00':'';
+  btn.style.color=showStaleOnly?'#fff':'';
+  btn.style.borderColor=showStaleOnly?'#b86a00':'';
+  applyFilter();
+}
 
 function loc(id){
   const l=locations.find(l=>l.id===id);
@@ -523,8 +582,8 @@ function applyFilter(){
   const q=(document.getElementById('map-search').value||'').toLowerCase();
   const lf=document.getElementById('map-loc').value;
   renderSummary();
-  renderFabrics(q,lf);
-  renderProducts(q,lf);
+  renderFabrics(q,lf,showStaleOnly);
+  renderProducts(q,lf,showStaleOnly);
 }
 
 function renderSummary(){
@@ -545,26 +604,35 @@ function renderSummary(){
   }).join('');
 }
 
-function renderFabrics(q,lf){
+function renderFabrics(q,lf,staleOnly){
   const rows=fabrics.filter(f=>{
     if(lf&&f.location_id!==lf)return false;
     if(q&&!(f.fabric_no+f.color).toLowerCase().includes(q))return false;
+    if(staleOnly&&!isStale(f.updated_at))return false;
     return true;
   });
+  if(fabricSortDir){
+    rows.sort((a,b)=>{
+      const av=a.updated_at||'';const bv=b.updated_at||'';
+      return fabricSortDir==='asc'?(av<bv?-1:av>bv?1:0):(av>bv?-1:av<bv?1:0);
+    });
+  }
   document.getElementById('fabric-count').textContent=`${rows.length}件`;
   const tb=document.getElementById('fabric-tbody');
   if(!rows.length){
-    tb.innerHTML=`<tr><td colspan="7"><div class="empty">登録された生地がありません<br><span style="font-size:12px">「生地・商品を登録」タブから追加してください</span></div></td></tr>`;
+    tb.innerHTML=`<tr><td colspan="8"><div class="empty">${staleOnly?'停滞中の生地はありません':'登録された生地がありません'}<br><span style="font-size:12px">${staleOnly?'2ヶ月以内に動きがある生地はすべて正常です':'「生地・商品を登録」タブから追加してください'}</span></div></td></tr>`;
     return;
   }
   tb.innerHTML=rows.map(f=>{
     const l=loc(f.location_id);
-    return `<tr>
+    const stale=isStale(f.updated_at);
+    return `<tr class="${stale?'stale-row':''}">
       <td><code style="font-size:12px">${f.fabric_no}</code></td>
       <td style="color:#555">${f.color}</td>
       <td class="r"><span class="qty">${f.qty}</span><span class="unit">反</span></td>
       <td>${l.name}</td>
       <td><span class="badge ${l.badge}">${l.process}</span></td>
+      ${renderDateCell(f.updated_at)}
       <td style="color:#aaa;font-size:12px">${f.memo||''}</td>
       <td style="white-space:nowrap">
         <button class="btn sm" onclick="openEditModal('fabric','${f.id}')">編集</button>
@@ -575,26 +643,35 @@ function renderFabrics(q,lf){
   }).join('');
 }
 
-function renderProducts(q,lf){
+function renderProducts(q,lf,staleOnly){
   const rows=products.filter(p=>{
     if(lf&&p.location_id!==lf)return false;
     if(q&&!(p.code+p.name).toLowerCase().includes(q))return false;
+    if(staleOnly&&!isStale(p.updated_at))return false;
     return true;
   });
+  if(productSortDir){
+    rows.sort((a,b)=>{
+      const av=a.updated_at||'';const bv=b.updated_at||'';
+      return productSortDir==='asc'?(av<bv?-1:av>bv?1:0):(av>bv?-1:av<bv?1:0);
+    });
+  }
   document.getElementById('product-count').textContent=`${rows.length}件`;
   const tb=document.getElementById('product-tbody');
   if(!rows.length){
-    tb.innerHTML=`<tr><td colspan="6"><div class="empty">登録された商品がありません<br><span style="font-size:12px">裁断を記録すると自動で追加されます</span></div></td></tr>`;
+    tb.innerHTML=`<tr><td colspan="7"><div class="empty">${staleOnly?'停滞中の商品はありません':'登録された商品がありません'}<br><span style="font-size:12px">${staleOnly?'2ヶ月以内に動きがある商品はすべて正常です':'裁断を記録すると自動で追加されます'}</span></div></td></tr>`;
     return;
   }
   tb.innerHTML=rows.map(p=>{
     const l=loc(p.location_id);
-    return `<tr>
+    const stale=isStale(p.updated_at);
+    return `<tr class="${stale?'stale-row':''}">
       <td><code style="font-size:12px">${p.code}</code></td>
       <td style="color:#555">${p.name}</td>
       <td class="r"><span class="qty">${p.qty}</span><span class="unit">枚</span></td>
       <td>${l.name}</td>
       <td><span class="badge ${l.badge}">${l.process}</span></td>
+      ${renderDateCell(p.updated_at)}
       <td style="white-space:nowrap">
         <button class="btn sm" onclick="openEditModal('product','${p.id}')">編集</button>
         <button class="btn sm" onclick="openMoveWith('product','${p.id}')" style="margin-left:4px">移動</button>
