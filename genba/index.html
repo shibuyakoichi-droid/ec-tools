@@ -305,7 +305,10 @@ let lastSubmission = null;
 // ── ヘルパー ──
 function factoryConf()  { return FACTORIES_CONFIG.find(f => f.code === currentFactory); }
 function typeConf()     { return TYPES_CONFIG.find(t => t.code === currentType); }
-function productCode()  { return 'babyleg-' + currentType + '-' + currentFactory; }
+function productCode()  {
+  if (currentType === 'links') return 'links-baby-leg-' + currentFactory;
+  return 'babyleg-' + currentType + '-' + currentFactory;
+}
 function skuSuffix()    { const f = factoryConf(); return f ? '-' + f.suffix : ''; }
 
 function getSkusForCurrent() {
