@@ -160,6 +160,7 @@ textarea{resize:vertical;min-height:52px}
     <button class="ftab active" data-factory="kamiki"   onclick="switchFactory('kamiki')">🏭 神木</button>
     <button class="ftab"        data-factory="nishio"   onclick="switchFactory('nishio')">🏭 西尾</button>
     <button class="ftab"        data-factory="hiramoto" onclick="switchFactory('hiramoto')">🏭 平本靴下</button>
+    <button class="ftab"        data-factory="takagaki" onclick="switchFactory('takagaki')">🏭 高垣</button>
   </div>
 
   <!-- 商品タイプタブ -->
@@ -168,6 +169,7 @@ textarea{resize:vertical;min-height:52px}
     <button class="ttab"        data-type="kusumi" onclick="switchType('kusumi')">くすみ</button>
     <button class="ttab"        data-type="linen"  onclick="switchType('linen')">リネン</button>
     <button class="ttab"        data-type="usude"  onclick="switchType('usude')">薄手</button>
+    <button class="ttab"        data-type="links"  onclick="switchType('links')">リンクス</button>
   </div>
 
   <!-- セット情報 -->
@@ -265,12 +267,14 @@ const FACTORIES_CONFIG = [
   { code:'kamiki',   label:'神木',     suffix:'KMK', stage:'神木さん' },
   { code:'nishio',   label:'西尾',     suffix:'WSO', stage:'西尾さん' },
   { code:'hiramoto', label:'平本靴下', suffix:'HRT', stage:'平本靴下さん' },
+  { code:'takagaki', label:'高垣',     suffix:'TKG', stage:'高垣さん' },
 ];
 const TYPES_CONFIG = [
   { code:'tubu',   name:'つぶつぶ' },
   { code:'kusumi', name:'くすみ' },
   { code:'linen',  name:'リネン' },
   { code:'usude',  name:'薄手' },
+  { code:'links',  name:'リンクス' },
 ];
 const SHARED_TYPES = ['tubu','kusumi']; // この2種は共有SKUあり
 
@@ -281,10 +285,11 @@ const BASE_SKUS = {
   kusumi: [['KBL-DP','ダスティピンク'],['KBL-GR','グレー'],['KBL-OL','オリーブ'],['KBL-CG','チャコールグレー'],['KBL-MC','杢チャコール'],['KBL-MG','杢グレー']],
   linen:  [['LBL-IV','【リネン】くすみアイボリー'],['LBL-MP','【リネン】ミルキーピンク'],['LBL-GR','【リネン】グレー'],['LBL-MB','【リネン】ミルクベージュ'],['LBL-MT','【リネン】ミント']],
   usude:  [['UBL-KN','【薄手】キナリ'],['UBL-OAT','【薄手】オートミール'],['UBL-PP','【薄手】ベビーピンク'],['UBL-BB','【薄手】ベビーブルー'],['UBL-SG','【薄手】シルバーグレー'],['UBL-CG','【薄手】チャコールグレー'],['UBL-WH','【薄手】ホワイト']],
+  links:  [['LKBL-KN','キナリ'],['LKBL-KNT','キナリツブ'],['LKBL-AG','アールグレイ'],['LKBL-MG','杢グレー']],
 };
 
-const ALL_STAGES = ['神木さん','西尾さん','平本靴下さん','エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫'];
-const FACTORY_STAGES = ['神木さん','西尾さん','平本靴下さん'];
+const ALL_STAGES = ['神木さん','西尾さん','平本靴下さん','高垣さん','エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫','B品'];
+const FACTORY_STAGES = ['神木さん','西尾さん','平本靴下さん','高垣さん'];
 
 let masterSnapshot = {};
 let currentMode    = '工程移動';
@@ -436,7 +441,7 @@ function updateContext() {
 // ── ステージピル ──
 function renderStagePills() {
   const src  = ALL_STAGES;
-  const dest = ['エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫','出荷'];
+  const dest = ['エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫','B品','出荷'];
   document.getElementById('sourcePills').innerHTML =
     src.map(n => `<div class="pill" data-stage="${n}" onclick="pickSource(this)">${n}</div>`).join('');
   document.getElementById('destPills').innerHTML =
