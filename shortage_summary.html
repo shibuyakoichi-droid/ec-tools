@@ -220,13 +220,15 @@ function getCategory(name) {
 
 // ---- ロケーショングループ定義 ----
 const LOC_GROUPS = [
-  { label: 'Z-01エリア',       test: loc => /^Z-01/i.test(loc) },
-  { label: 'Z-02〜05エリア',   test: loc => /^Z-0[2-5]/i.test(loc) },
-  { label: 'Z-06〜08（別棟）', test: loc => /^Z-0[6-8]/i.test(loc) },
-  { label: 'その他',           test: () => true },
+  { label: '🐬 イルカ（05）',         test: loc => /^05/i.test(loc) },
+  { label: '廊下（01）',              test: loc => /^01/i.test(loc) },
+  { label: '🍎 りんご（04）',         test: loc => /^04/i.test(loc) },
+  { label: '🍌 バナナ（03）',         test: loc => /^03/i.test(loc) },
+  { label: '🍇 ぶどう・Bゾーン（06）', test: loc => /^06/i.test(loc) },
+  { label: 'その他',                  test: () => true },
 ];
 function getLocGroup(loc) {
-  if (!loc || /^A-/i.test(loc)) return null; // Aはピッキング場所→除外
+  if (!loc) return null;
   for (const g of LOC_GROUPS) if (g.test(loc)) return g.label;
   return null;
 }
