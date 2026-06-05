@@ -167,6 +167,7 @@
       <input type="text" id="filter" class="filter" placeholder="商品コード・商品名で絞り込み…">
       <button class="btn" id="printBtn">🖨️ 印刷</button>
       <button class="btn secondary" id="printLocBtn">📋 棚番別印刷</button>
+      <button class="btn secondary" id="exportLocCsv">📥 棚番別CSV</button>
       <button class="btn secondary" id="exportCsv">CSV書き出し</button>
       <button class="btn danger" id="clearAll">全クリア</button>
     </div>
@@ -500,6 +501,59 @@ function exportCsv() {
   a.click(); URL.revokeObjectURL(url);
 }
 
+// ---- 棚番別CSV書き出し ----
+function exportLocCsv() {
+  if (!stockLoaded) { alert('在庫実績CSVを先に読み込んでください。棚番別CSVにはロケーション情報が必要です。'); return; }
+  const data = aggregate();
+  if (data.length === 0) { alert('データがありません'); return; }
+
+  const grpMap = new Map(LOC_GROUPS.map(g => [g.label, []]));
+  const noLocItems = [];
+
+  for (const d of data) {
+    const sm = stockMap.get(d.code);
+    if (!sm || sm.locEntries.length === 0) {
+      noLocItems.push({ ...d, pickLocs: [] });
+      continue;
+    }
+    const byGrp = new Map();
+    for (const le of sm.locEntries) {
+      if (!byGrp.has(le.group)) byGrp.set(le.group, []);
+      byGrp.get(le.group).push(le);
+    }
+    for (const [grpLabel, locs] of byGrp) {
+      const sortedLocs = [...locs].sort((a, b) => a.loc.localeCompare(b.loc));
+      grpMap.get(grpLabel)?.push({ ...d, pickLocs: sortedLocs });
+    }
+  }
+
+  const csvRows = [['棚番グループ', '商品コード', '商品名', 'ロケーション（在庫数）', '欠品数', '在庫数', '伝票件数', 'セット商品コード']];
+
+  for (const grp of LOC_GROUPS) {
+    const items = grpMap.get(grp.label) || [];
+    if (items.length === 0) continue;
+    items.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'));
+    for (const d of items) {
+      const locs = d.pickLocs.map(l => `${l.loc}(${l.locStock}個)`).join(' / ');
+      csvRows.push([grp.label, d.code, d.name, locs, d.qty, d.stock ?? '', d.orders, d.set]);
+    }
+  }
+
+  if (noLocItems.length > 0) {
+    noLocItems.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'));
+    for (const d of noLocItems) {
+      csvRows.push(['ロケーション不明', d.code, d.name, '', d.qty, d.stock ?? '', d.orders, d.set]);
+    }
+  }
+
+  const csv = csvRows.map(r => r.map(c => { const s = String(c); return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s; }).join(',')).join('\r\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = `欠品集計_棚番別_${new Date().toISOString().slice(0,10).replace(/-/g,'')}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
 // ---- 棚番別印刷 ----
 function printByLocation() {
   if (!stockLoaded) { alert('在庫実績CSVを先に読み込んでください。棚番別印刷にはロケーション情報が必要です。'); return; }
@@ -544,7 +598,7 @@ function printByLocation() {
     const items = grpMap.get(grp.label) || [];
     if (items.length === 0) continue;
     // ロケーション順にソート
-    items.sort((a, b) => (a.pickLocs[0]?.loc || '').localeCompare(b.pickLocs[0]?.loc || ''));
+    items.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'ja'));
     const totalQty = items.reduce((s, d) => s + d.qty, 0);
     const rows = items.map(d => {
       const locHtml = d.pickLocs.map(l => `${escapeHtml(l.loc)}&nbsp;(${l.locStock}個)`).join('<br>');
@@ -629,6 +683,7 @@ stockInput.addEventListener('change', e => { if (e.target.files[0]) handleStockF
 
 document.getElementById('filter').addEventListener('input', render);
 document.getElementById('exportCsv').addEventListener('click', exportCsv);
+document.getElementById('exportLocCsv').addEventListener('click', exportLocCsv);
 document.getElementById('printLocBtn').addEventListener('click', printByLocation);
 document.getElementById('printBtn').addEventListener('click', () => {
   const data = aggregate();
