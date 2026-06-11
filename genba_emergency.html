@@ -10,7 +10,6 @@
   --bg:#f5f1ea;--card:#fffdf8;--ink:#1a1a1a;--soft:#6b6357;
   --line:#d4cdbf;--acc:#a64635;--acc-s:#c9826f;--acc-bg:#fdf3ee;
   --ok:#5a7a3e;--ok-bg:#f4f8ec;--warn:#b8842a;--warn-bg:#fcf6e8;
-  --set:#3d6fa8;--set-bg:#eef4fc;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{font-family:"Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px}
@@ -28,15 +27,12 @@ html,body{font-family:"Noto Sans JP",sans-serif;background:var(--bg);color:var(-
 .mtab.active{background:var(--card);color:var(--acc);box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .mtab .icon{display:block;font-size:16px;margin-bottom:2px}
 
-/* ── 工場タブ ── */
-.factory-tabs{display:flex;gap:8px;margin-bottom:12px}
-.ftab{flex:1;padding:11px 4px;font-size:13px;font-weight:700;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-family:inherit;color:var(--soft);text-align:center;transition:all .15s}
-.ftab.active{background:#1a4a2e;color:#fff;border-color:#1a4a2e}
-
-/* ── 商品タイプタブ ── */
-.type-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
-.ttab{flex:1;min-width:60px;padding:8px 4px;font-size:12px;font-weight:700;background:var(--card);border:1px solid var(--line);border-radius:7px;cursor:pointer;font-family:inherit;color:var(--soft);text-align:center;transition:all .15s}
-.ttab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+/* ── 商品タブ ── */
+.product-tabs{display:flex;gap:8px;margin-bottom:16px}
+.ptab{flex:1;padding:12px 6px;font-size:13px;font-weight:700;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-family:inherit;color:var(--soft);text-align:center;transition:all .15s;line-height:1.4}
+.ptab small{display:block;font-size:10px;font-weight:400;margin-top:2px;color:var(--soft)}
+.ptab.active{background:#1a4a2e;color:#fff;border-color:#1a4a2e}
+.ptab.active small{color:#a0c8a8}
 
 /* ── フォーム ── */
 .body{padding:20px 24px}
@@ -54,23 +50,20 @@ textarea{resize:vertical;min-height:60px}
 .pill{padding:11px 4px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;text-align:center;color:var(--ink);transition:all .15s;user-select:none}
 .pill.selected{background:var(--acc-bg);border-color:var(--acc);color:var(--acc);font-weight:700}
 .pill.disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
-.shared-badge{font-size:9px;background:var(--acc-bg);color:var(--acc);border:1px solid var(--acc-s);border-radius:3px;padding:0 4px;margin-left:3px}
 
 /* ── モード別表示切替 ── */
-.mode-外部入荷  .field-source{display:none}
-.mode-外部入荷  .field-dest{display:none}
-.mode-出荷数更新 .field-source{display:none}
-.mode-出荷数更新 .field-dest{display:none}
+.mode-出荷数更新  .field-source{display:none}
+.mode-出荷数更新  .field-dest{display:none}
 .mode-生産目標更新 .field-source{display:none}
 .mode-生産目標更新 .field-dest{display:none}
-.mode-修正     .field-source{display:none}
-.mode-修正     .field-dest{display:none}
+.mode-修正        .field-source{display:none}
+.mode-修正        .field-dest{display:none}
 .field-fix{display:none}
 .mode-修正 .field-fix{display:block}
 
-.mode-ログ .type-tabs,.mode-ログ .field-sku,.mode-ログ .context-box,
-.mode-ログ .set-info,.mode-ログ .flow,.mode-ログ .field-qty,
-.mode-ログ .field-memo,.mode-ログ .submit-btn,.mode-ログ .quick-row,
+.mode-ログ .product-tabs,.mode-ログ .field-sku,.mode-ログ .context-box,
+.mode-ログ .flow,.mode-ログ .field-qty,.mode-ログ .field-memo,
+.mode-ログ .submit-btn,.mode-ログ .quick-row,
 .mode-ログ .field-source,.mode-ログ .field-dest,.mode-ログ .field-fix{display:none}
 .mode-ログ .log-panel{display:block}
 
@@ -79,10 +72,6 @@ textarea{resize:vertical;min-height:60px}
 .context-box .ctx-title{font-weight:700;color:var(--ok);font-size:12px;margin-bottom:5px}
 .context-box.warn{background:var(--warn-bg);border-left-color:var(--warn)}
 .context-box.warn .ctx-title{color:var(--warn)}
-.context-box.set-box{background:var(--set-bg);border-left-color:var(--set)}
-.context-box.set-box .ctx-title{color:var(--set)}
-.set-info{display:none;margin-bottom:14px}
-.set-info.show{display:block}
 
 /* ── フロープレビュー ── */
 .flow{background:var(--acc-bg);border:1px dashed var(--acc-s);border-radius:8px;padding:14px;margin:14px 0;text-align:center}
@@ -154,29 +143,11 @@ textarea{resize:vertical;min-height:60px}
     <button class="mtab" data-mode="ログ"        onclick="switchMode('ログ')"><span class="icon">📋</span>ログ</button>
   </div>
 
-  <!-- 工場タブ -->
-  <div class="factory-tabs">
-    <button class="ftab active" data-factory="kamiki"   onclick="switchFactory('kamiki')">🏭 神木</button>
-    <button class="ftab"        data-factory="nishio"   onclick="switchFactory('nishio')">🏭 西尾</button>
-    <button class="ftab"        data-factory="hiramoto" onclick="switchFactory('hiramoto')">🏭 平本靴下</button>
-    <button class="ftab"        data-factory="takagaki" onclick="switchFactory('takagaki')">🏭 高垣</button>
-  </div>
-
-  <!-- 商品タイプタブ -->
-  <div class="type-tabs">
-    <button class="ttab active" data-type="tubu"   onclick="switchType('tubu')">つぶつぶ</button>
-    <button class="ttab"        data-type="kusumi" onclick="switchType('kusumi')">くすみ</button>
-    <button class="ttab"        data-type="linen"  onclick="switchType('linen')">リネン</button>
-    <button class="ttab"        data-type="usude"  onclick="switchType('usude')">薄手</button>
-    <button class="ttab"        data-type="links"  onclick="switchType('links')">リンクス</button>
-  </div>
-
-  <!-- セット情報 -->
-  <div class="set-info" id="setInfo">
-    <div class="context-box set-box">
-      <div class="ctx-title">🎁 セット品</div>
-      <div id="setComponents" style="font-size:13px;color:var(--set);line-height:1.8"></div>
-    </div>
+  <!-- 商品タブ -->
+  <div class="product-tabs">
+    <button class="ptab active" data-product="hira-asi"       onclick="switchProduct('hira-asi')">足首ウォーマー<small>hira-asi</small></button>
+    <button class="ptab"        data-product="baby-band"      onclick="switchProduct('baby-band')">ベビーヘアバンド<small>baby-band</small></button>
+    <button class="ptab"        data-product="cross-babyband" onclick="switchProduct('cross-babyband')">クロスヘアバンド<small>cross-babyband</small></button>
   </div>
 
   <!-- 在庫コンテキスト -->
@@ -187,7 +158,7 @@ textarea{resize:vertical;min-height:60px}
 
   <!-- SKU -->
   <div class="field field-sku">
-    <div class="field-label">SKU（色） <span class="req">必須</span></div>
+    <div class="field-label">カラー <span class="req">必須</span></div>
     <div class="sel-wrap">
       <select id="skuSelect" onchange="onSkuChange()"></select>
     </div>
@@ -238,7 +209,7 @@ textarea{resize:vertical;min-height:60px}
 
   <div class="quick-row">
     <button class="quick-btn" onclick="copyLast()">↻ 直前をコピー</button>
-    <button class="quick-btn" onclick="window.open('${DASHBOARD_URL}','_blank')">📊 ダッシュボード</button>
+    <button class="quick-btn" onclick="window.open('https://shibuyakoichi-droid.github.io/ec-tools/genba/dashboard.html','_blank')">📊 ダッシュボード</button>
   </div>
 
   <!-- ログパネル -->
@@ -258,67 +229,46 @@ textarea{resize:vertical;min-height:60px}
 <div class="toast" id="toast"></div>
 
 <script>
-const GAS_API_URL   = 'https://script.google.com/macros/s/AKfycbx9OJmADgkcN_HzcM_GQ7SoH573SFx7rdjj_a8-_Ew3gBCpa66QfvmVD3DUhJBGMcDt/exec';
-const DASHBOARD_URL = 'https://shibuyakoichi-droid.github.io/ec-tools/genba/dashboard.html';
-const KG_PER_PCS    = 0.030;
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbx9OJmADgkcN_HzcM_GQ7SoH573SFx7rdjj_a8-_Ew3gBCpa66QfvmVD3DUhJBGMcDt/exec';
 
-const FACTORIES_CONFIG = [
-  { code:'kamiki',   label:'神木',     suffix:'KMK', stage:'神木さん' },
-  { code:'nishio',   label:'西尾',     suffix:'WSO', stage:'西尾さん' },
-  { code:'hiramoto', label:'平本靴下', suffix:'HRT', stage:'平本靴下さん' },
-  { code:'takagaki', label:'高垣',     suffix:'TKG', stage:'高垣さん' },
-];
-const TYPES_CONFIG = [
-  { code:'tubu',   name:'つぶつぶ' },
-  { code:'kusumi', name:'くすみ' },
-  { code:'linen',  name:'リネン' },
-  { code:'usude',  name:'薄手' },
-  { code:'links',  name:'リンクス' },
-];
-const SHARED_TYPES = ['tubu','kusumi'];
-
-const BASE_SKUS = {
-  shared: [['BL-KN','キナリ'],['BL-MOM','杢オートミール']],
-  tubu:   [['TBL-KNT','キナリツブ'],['TBL-SRT','シロツブ'],['TBL-CNP','カラーネップ']],
-  kusumi: [['KBL-DP','ダスティピンク'],['KBL-GR','グレー'],['KBL-OL','オリーブ'],['KBL-CG','チャコールグレー'],['KBL-MC','杢チャコール'],['KBL-MG','杢グレー']],
-  linen:  [['LBL-IV','【リネン】くすみアイボリー'],['LBL-MP','【リネン】ミルキーピンク'],['LBL-GR','【リネン】グレー'],['LBL-MB','【リネン】ミルクベージュ'],['LBL-MT','【リネン】ミント']],
-  usude:  [['UBL-KN','【薄手】キナリ'],['UBL-OAT','【薄手】オートミール'],['UBL-PP','【薄手】ベビーピンク'],['UBL-BB','【薄手】ベビーブルー'],['UBL-SG','【薄手】シルバーグレー'],['UBL-CG','【薄手】チャコールグレー'],['UBL-WH','【薄手】ホワイト']],
-  links:  [['LKBL-KN','キナリ'],['LKBL-KNT','キナリツブ'],['LKBL-AG','アールグレイ'],['LKBL-MG','杢グレー']],
+const PRODUCT_SKUS = {
+  'hira-asi': [
+    ['HA-KB',  'くすみベージュ'],
+    ['HA-BK',  'ブラック'],
+    ['HA-GR',  'グレー'],
+    ['HA-OL',  'オリーブ'],
+    ['HA-CG',  'チャコールグレー'],
+  ],
+  'baby-band': [
+    ['BBAND-IV',  'アイボリー'],
+    ['BBAND-OAT', 'オートミール'],
+    ['BBAND-CG',  'チャコールグレー'],
+    ['BBAND-DP',  'ダスティピンク'],
+  ],
+  'cross-babyband': [
+    ['XBAND-IV',  'アイボリー'],
+    ['XBAND-CG',  'チャコールグレー'],
+    ['XBAND-DP',  'ダスティピンク'],
+    ['XBAND-OAT', 'オートミール'],
+  ],
 };
 
-const ALL_STAGES = ['神木さん','西尾さん','平本靴下さん','高垣さん','エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫','B品'];
-const FACTORY_STAGES = ['神木さん','西尾さん','平本靴下さん','高垣さん'];
+const ALL_STAGES  = ['神木さん','西尾さん','平本靴下さん','高垣さん','エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫','B品'];
+const DEST_STAGES = ['エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫','B品','出荷'];
 
 let masterSnapshot = {};
 let currentMode    = '工程移動';
-let currentFactory = 'kamiki';
-let currentType    = 'tubu';
+let currentProduct = 'hira-asi';
 let selectedSource = null;
 let selectedDest   = null;
 let selectedFix    = null;
 let lastSubmission = null;
 
-function factoryConf() { return FACTORIES_CONFIG.find(f => f.code === currentFactory); }
-function productCode() {
-  if (currentType === 'links') return 'links-baby-leg-' + currentFactory;
-  return 'babyleg-' + currentType + '-' + currentFactory;
-}
-function skuSuffix() { const f = factoryConf(); return f ? '-' + f.suffix : ''; }
-
-function getSkusForCurrent() {
-  const sfx  = skuSuffix();
-  const type = currentType;
-  const skus = [];
-  if (SHARED_TYPES.includes(type)) {
-    BASE_SKUS.shared.forEach(b => skus.push({ code: b[0]+sfx, name: b[1], shared: true }));
-  }
-  (BASE_SKUS[type] || []).forEach(b => skus.push({ code: b[0]+sfx, name: b[1], shared: false }));
-  return skus;
-}
+function getSkusForCurrent() { return PRODUCT_SKUS[currentProduct] || []; }
 
 function getCurrentSku() {
   const code = document.getElementById('skuSelect').value;
-  return getSkusForCurrent().find(s => s.code === code);
+  return getSkusForCurrent().find(s => s[0] === code);
 }
 
 async function init() {
@@ -338,16 +288,9 @@ async function loadSnapshot() {
   } catch(e) { console.warn('snapshot load failed'); }
 }
 
-function switchFactory(code) {
-  currentFactory = code;
-  document.querySelectorAll('.ftab').forEach(t => t.classList.toggle('active', t.dataset.factory === code));
-  renderSkuSelect();
-  onSkuChange();
-}
-
-function switchType(code) {
-  currentType = code;
-  document.querySelectorAll('.ttab').forEach(t => t.classList.toggle('active', t.dataset.type === code));
+function switchProduct(code) {
+  currentProduct = code;
+  document.querySelectorAll('.ptab').forEach(t => t.classList.toggle('active', t.dataset.product === code));
   renderSkuSelect();
   onSkuChange();
 }
@@ -355,50 +298,42 @@ function switchType(code) {
 function renderSkuSelect() {
   const skus = getSkusForCurrent();
   document.getElementById('skuSelect').innerHTML = skus.map(s =>
-    `<option value="${s.code}">${s.name}${s.shared ? ' ★共有' : ''}</option>`
+    `<option value="${s[0]}">${s[1]}</option>`
   ).join('');
 }
 
-function onSkuChange() { updateContext(); updateUnitDisplay(); updateFlow(); }
+function onSkuChange() { updateContext(); updateFlow(); }
 
 function updateContext() {
-  const sku = getCurrentSku();
+  const sku  = getCurrentSku();
   if (!sku) return;
-  document.getElementById('setInfo').classList.remove('show');
+  const snap = masterSnapshot[sku[0]] || {};
 
-  const snap      = masterSnapshot[sku.code] || {};
-  const factStage = factoryConf()?.stage || '神木さん';
-  const factKg    = snap[factStage] || 0;
-  const factPcs   = Math.round(factKg / KG_PER_PCS);
   const physStock = snap.physStock != null ? snap.physStock : (snap['実在庫'] || 0);
   const shipped   = snap.shipped   != null ? snap.shipped   : (snap['出荷数'] || 0);
   const backlog   = snap.backlog   || 0;
-  const washing   = snap['洗濯']   || 0;
 
   const stagePcs = ['エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫']
     .reduce((s,st) => s + (snap[st] || 0), 0);
-  const processTotal = factPcs + stagePcs;
-  const diff = backlog - processTotal;
+  const diff = backlog - stagePcs;
 
   const parts = [];
-  if (factKg)                              parts.push(`${factStage}:${factKg}kg(≈${factPcs}個)`);
-  if (snap['エルアイシー(未縫製)'])        parts.push(`エ社(未):${snap['エルアイシー(未縫製)']}`);
-  if (snap['池本さん'])                    parts.push(`池本:${snap['池本さん']}`);
-  if (snap['刑務所'])                      parts.push(`刑務:${snap['刑務所']}`);
-  if (snap['エルアイシー(加工前)'])        parts.push(`エ社(加):${snap['エルアイシー(加工前)']}`);
-  if (washing)                             parts.push(`洗濯:${washing}`);
-  if (snap['内職'])                        parts.push(`内職:${snap['内職']}`);
-  if (physStock)                           parts.push(`手元:${physStock.toLocaleString()}`);
+  if (snap['エルアイシー(未縫製)']) parts.push(`エ社(未):${snap['エルアイシー(未縫製)']}`);
+  if (snap['池本さん'])             parts.push(`池本:${snap['池本さん']}`);
+  if (snap['刑務所'])               parts.push(`刑務:${snap['刑務所']}`);
+  if (snap['エルアイシー(加工前)']) parts.push(`エ社(加):${snap['エルアイシー(加工前)']}`);
+  if (snap['洗濯'])                 parts.push(`洗濯:${snap['洗濯']}`);
+  if (snap['内職'])                 parts.push(`内職:${snap['内職']}`);
+  if (physStock)                    parts.push(`手元:${physStock.toLocaleString()}`);
 
-  const sharedTag = sku.shared ? ' <span class="shared-badge">★共有</span>' : '';
   const lines = [
-    `<b>${sku.code}${sharedTag}  ${sku.name}</b>`,
+    `<b>${sku[0]}  ${sku[1]}</b>`,
     parts.length ? parts.join(' / ') : '在庫データなし',
     `📦 手元在庫: ${physStock.toLocaleString()}個 ｜ 出荷済: ${shipped.toLocaleString()}個`
   ];
   if (backlog > 0) {
     const diffLabel = diff > 0 ? `🔴 不足 +${diff}個` : diff < 0 ? `✅ 余裕 ${Math.abs(diff)}個` : '✅ ピッタリ';
-    lines.push(`📋 出荷残: ${backlog.toLocaleString()}個 → 工程${processTotal.toLocaleString()}個 ${diffLabel}`);
+    lines.push(`📋 出荷残: ${backlog.toLocaleString()}個 → 工程${stagePcs.toLocaleString()}個 ${diffLabel}`);
   }
 
   const box = document.getElementById('contextBox');
@@ -407,19 +342,16 @@ function updateContext() {
 }
 
 function renderStagePills() {
-  const src  = ALL_STAGES;
-  const dest = ['エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫','B品','出荷'];
   document.getElementById('sourcePills').innerHTML =
-    src.map(n => `<div class="pill" data-stage="${n}" onclick="pickSource(this)">${n}</div>`).join('');
+    ALL_STAGES.map(n => `<div class="pill" data-stage="${n}" onclick="pickSource(this)">${n}</div>`).join('');
   document.getElementById('destPills').innerHTML =
-    dest.map(n => `<div class="pill" data-stage="${n}" onclick="pickDest(this)">${n}</div>`).join('');
+    DEST_STAGES.map(n => `<div class="pill" data-stage="${n}" onclick="pickDest(this)">${n}</div>`).join('');
   selectedSource = selectedDest = null;
 }
 
 function renderFixPills() {
-  const stages = ALL_STAGES.concat(['出荷数']);
   document.getElementById('fixPills').innerHTML =
-    stages.map(n => `<div class="pill" data-stage="${n}" onclick="pickFix(this)">${n}</div>`).join('');
+    ALL_STAGES.concat(['出荷数']).map(n => `<div class="pill" data-stage="${n}" onclick="pickFix(this)">${n}</div>`).join('');
   selectedFix = null;
 }
 
@@ -431,40 +363,30 @@ function pickSource(el) {
     p.classList.toggle('disabled', same);
     if (same && selectedDest === p.dataset.stage) { p.classList.remove('selected'); selectedDest = null; }
   });
-  updateUnitDisplay(); updateFlow();
+  updateFlow();
 }
 
 function pickDest(el) {
   if (el.classList.contains('disabled')) return;
   document.querySelectorAll('#destPills .pill').forEach(p => p.classList.remove('selected'));
   el.classList.add('selected'); selectedDest = el.dataset.stage;
-  updateUnitDisplay(); updateFlow();
+  updateFlow();
 }
 
 function pickFix(el) {
   document.querySelectorAll('#fixPills .pill').forEach(p => p.classList.remove('selected'));
   el.classList.add('selected'); selectedFix = el.dataset.stage;
-  updateCurrentVal(); updateUnitDisplay(); updateFlow();
+  updateCurrentVal(); updateFlow();
 }
 
 function updateCurrentVal() {
   const box = document.getElementById('currentValBox');
   if (!selectedFix) { box.style.display='none'; return; }
   const sku  = getCurrentSku();
-  const snap = sku ? (masterSnapshot[sku.code] || {}) : {};
+  const snap = sku ? (masterSnapshot[sku[0]] || {}) : {};
   const cur  = snap[selectedFix] != null ? snap[selectedFix] : 0;
-  const unit = FACTORY_STAGES.includes(selectedFix) ? 'kg' : '個';
-  document.getElementById('currentValContent').innerHTML = `<b>${selectedFix}</b>：現在 <b>${cur}${unit}</b>`;
+  document.getElementById('currentValContent').innerHTML = `<b>${selectedFix}</b>：現在 <b>${cur}個</b>`;
   box.style.display = '';
-}
-
-function updateUnitDisplay() {
-  const ud = document.getElementById('unitDisplay');
-  if (currentMode === '外部入荷') { ud.textContent = 'kg'; return; }
-  if (currentMode === '修正') {
-    ud.textContent = selectedFix && FACTORY_STAGES.includes(selectedFix) ? 'kg' : '個'; return;
-  }
-  ud.textContent = '個';
 }
 
 function switchMode(mode) {
@@ -484,23 +406,20 @@ function switchMode(mode) {
   document.querySelectorAll('#sourcePills .pill,#destPills .pill,#fixPills .pill')
     .forEach(p => p.classList.remove('selected','disabled'));
   document.getElementById('currentValBox').style.display = 'none';
-  document.getElementById('setInfo').classList.remove('show');
 
-  updateUnitDisplay(); updateFlow();
+  updateFlow();
   if (mode === 'ログ') loadLogs();
 }
 
 function updateFlow() {
-  const qty  = document.getElementById('qtyInput').value || '―';
-  const unit = document.getElementById('unitDisplay').textContent;
-  const f    = factoryConf();
-  let text   = '―', sub = `${qty} ${unit}`;
+  const qty = document.getElementById('qtyInput').value || '―';
+  let text  = '―', sub = `${qty} 個`;
 
-  if      (currentMode === '外部入荷')    { text = `外部 → ${f?.stage || '工場'}`; }
+  if      (currentMode === '外部入荷')    { text = `外部 → ${selectedDest || '?'}`; }
   else if (currentMode === '工程移動')    { text = `${selectedSource || '?'} → ${selectedDest || '?'}`; }
   else if (currentMode === '出荷数更新')  { text = `実在庫から ${qty} 個 を出荷`; sub = `実在庫 -${qty} / 出荷数 +${qty}`; }
   else if (currentMode === '生産目標更新'){ text = `生産目標を ${qty} 個 にセット`; sub = ''; }
-  else if (currentMode === '修正')        { text = selectedFix ? `${selectedFix} を ${qty} ${unit} に修正` : '工程を選択'; sub = ''; }
+  else if (currentMode === '修正')        { text = selectedFix ? `${selectedFix} を ${qty} 個 に修正` : '工程を選択'; sub = ''; }
 
   document.getElementById('flowText').innerHTML = text.replace(/→/g, '<span class="arrow">→</span>');
   document.getElementById('flowQty').textContent = sub;
@@ -540,25 +459,23 @@ async function submitForm() {
   const sku  = getCurrentSku();
   const qty  = parseFloat(document.getElementById('qtyInput').value);
   const memo = document.getElementById('memoInput').value;
-  const unit = document.getElementById('unitDisplay').textContent;
-  const f    = factoryConf();
 
-  if (!qty || qty <= 0) return showToast('数量を入力してください', true);
-  if (currentMode === '工程移動' && (!selectedSource || !selectedDest)) return showToast('移動元・移動先を選択してください', true);
-  if (currentMode === '修正'     && !selectedFix)                       return showToast('修正する工程を選択してください', true);
+  if (!qty || qty <= 0)                                                        return showToast('数量を入力してください', true);
+  if (currentMode === '工程移動' && (!selectedSource || !selectedDest))        return showToast('移動元・移動先を選択してください', true);
+  if (currentMode === '外部入荷' && !selectedDest)                             return showToast('移動先を選択してください', true);
+  if (currentMode === '修正'     && !selectedFix)                              return showToast('修正する工程を選択してください', true);
 
   const payload = {
     action:'recordEntry', timestamp:new Date().toISOString(),
     user:'緊急入力', userId:'emergency',
     mode: currentMode === '修正' ? '在庫修正' : currentMode,
-    product: productCode(),
-    skuCode: sku.code, skuName: sku.name,
+    product: currentProduct,
+    skuCode: sku[0], skuName: sku[1],
     source: ['外部入荷','出荷数更新','生産目標更新','修正'].includes(currentMode) ? '—' : selectedSource,
-    dest:   currentMode === '外部入荷'    ? f.stage
-          : currentMode === '修正'        ? selectedFix
+    dest:   currentMode === '修正'         ? selectedFix
           : ['出荷数更新','生産目標更新'].includes(currentMode) ? '—'
           : selectedDest,
-    qty, unit, memo
+    qty, unit:'個', memo
   };
 
   document.getElementById('formBody').style.display = 'none';
@@ -588,8 +505,7 @@ function copyLast() {
   if (!lastSubmission) return showToast('直前の入力がありません', true);
   const mode = lastSubmission.mode === '在庫修正' ? '修正' : lastSubmission.mode;
   switchMode(mode);
-  const m = lastSubmission.product?.match(/babyleg-(\w+)-(\w+)/);
-  if (m) { switchType(m[1]); switchFactory(m[2]); }
+  if (PRODUCT_SKUS[lastSubmission.product]) switchProduct(lastSubmission.product);
   document.getElementById('skuSelect').value = lastSubmission.skuCode;
   setTimeout(() => {
     if (lastSubmission.source && lastSubmission.source !== '—') {
