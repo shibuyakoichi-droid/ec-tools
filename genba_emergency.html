@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工程管理（緊急用） — SOWAN</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f1ea;--card:#fffdf8;--ink:#1a1a1a;--soft:#6b6357;
+  --line:#d4cdbf;--acc:#a64635;--acc-s:#c9826f;--acc-bg:#fdf3ee;
+  --ok:#5a7a3e;--ok-bg:#f4f8ec;--warn:#b8842a;--warn-bg:#fcf6e8;
+  --set:#3d6fa8;--set-bg:#eef4fc;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:"Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:15px}
+
+.page-wrap{max-width:680px;margin:0 auto;padding-bottom:60px}
+
+.hdr{background:var(--card);border-bottom:2px solid var(--acc);padding:14px 24px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20}
+.hdr-title{font-family:"Shippori Mincho",serif;font-size:18px;font-weight:700;flex:1}
+.hdr-badge{font-size:11px;color:#fff;background:var(--acc);padding:4px 12px;border-radius:12px;font-weight:700}
+.emergency-banner{background:#fff3cd;border:1px solid #ffc107;color:#856404;padding:8px 24px;font-size:12px;font-weight:700;text-align:center}
+
+/* ── モードタブ ── */
+.mode-tabs{display:flex;gap:6px;background:#ebe5da;padding:6px;border-radius:10px;margin-bottom:16px;flex-wrap:wrap}
+.mtab{flex:1;min-width:70px;padding:8px 10px;font-size:12px;font-weight:700;background:transparent;border:none;border-radius:7px;color:var(--soft);cursor:pointer;font-family:inherit;transition:all .2s;line-height:1.3;text-align:center}
+.mtab.active{background:var(--card);color:var(--acc);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.mtab .icon{display:block;font-size:16px;margin-bottom:2px}
+
+/* ── 工場タブ ── */
+.factory-tabs{display:flex;gap:8px;margin-bottom:12px}
+.ftab{flex:1;padding:11px 4px;font-size:13px;font-weight:700;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-family:inherit;color:var(--soft);text-align:center;transition:all .15s}
+.ftab.active{background:#1a4a2e;color:#fff;border-color:#1a4a2e}
+
+/* ── 商品タイプタブ ── */
+.type-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.ttab{flex:1;min-width:60px;padding:8px 4px;font-size:12px;font-weight:700;background:var(--card);border:1px solid var(--line);border-radius:7px;cursor:pointer;font-family:inherit;color:var(--soft);text-align:center;transition:all .15s}
+.ttab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ── フォーム ── */
+.body{padding:20px 24px}
+.field{margin-bottom:16px}
+.field-label{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.req{color:var(--acc);font-size:10px}
+.field-hint{font-size:11px;color:var(--soft);margin-top:5px;line-height:1.5}
+select,input[type=number],textarea{width:100%;padding:12px 16px;font-size:15px;background:var(--card);border:1px solid var(--line);border-radius:8px;font-family:inherit;color:var(--ink);appearance:none;-webkit-appearance:none}
+.sel-wrap{position:relative}
+.sel-wrap::after{content:'▾';position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--soft);pointer-events:none;font-size:13px}
+textarea{resize:vertical;min-height:60px}
+
+/* ── ピル ── */
+.pills{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.pill{padding:11px 4px;font-size:12px;font-weight:500;background:var(--card);border:1px solid var(--line);border-radius:8px;cursor:pointer;text-align:center;color:var(--ink);transition:all .15s;user-select:none}
+.pill.selected{background:var(--acc-bg);border-color:var(--acc);color:var(--acc);font-weight:700}
+.pill.disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+.shared-badge{font-size:9px;background:var(--acc-bg);color:var(--acc);border:1px solid var(--acc-s);border-radius:3px;padding:0 4px;margin-left:3px}
+
+/* ── モード別表示切替 ── */
+.mode-外部入荷  .field-source{display:none}
+.mode-外部入荷  .field-dest{display:none}
+.mode-出荷数更新 .field-source{display:none}
+.mode-出荷数更新 .field-dest{display:none}
+.mode-生産目標更新 .field-source{display:none}
+.mode-生産目標更新 .field-dest{display:none}
+.mode-修正     .field-source{display:none}
+.mode-修正     .field-dest{display:none}
+.field-fix{display:none}
+.mode-修正 .field-fix{display:block}
+
+.mode-ログ .type-tabs,.mode-ログ .field-sku,.mode-ログ .context-box,
+.mode-ログ .set-info,.mode-ログ .flow,.mode-ログ .field-qty,
+.mode-ログ .field-memo,.mode-ログ .submit-btn,.mode-ログ .quick-row,
+.mode-ログ .field-source,.mode-ログ .field-dest,.mode-ログ .field-fix{display:none}
+.mode-ログ .log-panel{display:block}
+
+/* ── コンテキスト ── */
+.context-box{background:var(--ok-bg);border-left:3px solid var(--ok);padding:12px 14px;border-radius:4px;margin-bottom:16px;font-size:12px;line-height:1.7}
+.context-box .ctx-title{font-weight:700;color:var(--ok);font-size:12px;margin-bottom:5px}
+.context-box.warn{background:var(--warn-bg);border-left-color:var(--warn)}
+.context-box.warn .ctx-title{color:var(--warn)}
+.context-box.set-box{background:var(--set-bg);border-left-color:var(--set)}
+.context-box.set-box .ctx-title{color:var(--set)}
+.set-info{display:none;margin-bottom:14px}
+.set-info.show{display:block}
+
+/* ── フロープレビュー ── */
+.flow{background:var(--acc-bg);border:1px dashed var(--acc-s);border-radius:8px;padding:14px;margin:14px 0;text-align:center}
+.flow .from-to{font-weight:700;color:var(--acc);font-size:15px;margin-bottom:3px}
+.flow .arrow{margin:0 8px;color:var(--acc-s)}
+.flow .qty-disp{font-family:"JetBrains Mono",monospace;font-size:19px;font-weight:700;color:var(--acc);margin-top:3px}
+
+/* ── 数量 ── */
+.qty-row{display:grid;grid-template-columns:1fr 80px;gap:10px}
+.unit-box{display:flex;align-items:center;justify-content:center;background:var(--acc-bg);border:1px solid var(--acc-s);border-radius:8px;font-weight:700;color:var(--acc);font-size:15px}
+
+/* ── 送信 ── */
+.submit-btn{width:100%;padding:15px;background:var(--acc);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:10px;box-shadow:0 4px 12px -4px rgba(166,70,53,.5)}
+.submit-btn:hover{background:#8a3828}
+.submit-btn:active{transform:translateY(1px)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed}
+.quick-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.quick-btn{padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;color:var(--soft)}
+.quick-btn:hover{background:var(--acc-bg)}
+
+/* ── 現在値ボックス ── */
+.current-val-box{background:var(--ok-bg);border-left:3px solid var(--ok);padding:10px 12px;border-radius:4px;margin-top:10px;font-size:13px;display:none}
+
+/* ── ログパネル ── */
+.log-panel{display:none}
+.log-list{display:flex;flex-direction:column;gap:10px}
+.log-item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.log-time{font-size:11px;color:var(--soft);font-family:"JetBrains Mono",monospace;margin-bottom:4px}
+.log-mode-badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-bottom:5px}
+.mc-move{background:#eef4fc;color:#3d6fa8}.mc-in{background:var(--ok-bg);color:var(--ok)}
+.mc-ship{background:var(--warn-bg);color:var(--warn)}.mc-fix{background:#f5f0ff;color:#6b2fa0}
+.mc-other{background:var(--bg);color:var(--soft)}
+.log-body{color:var(--ink);line-height:1.7;font-size:13px}
+.log-footer{font-size:11px;color:var(--soft);margin-top:4px}
+.log-empty{text-align:center;padding:40px;color:var(--soft);font-size:14px}
+
+/* ── Toast/Loading ── */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--ok);color:#fff;padding:14px 28px;border-radius:24px;font-size:14px;font-weight:700;box-shadow:0 8px 20px -8px rgba(90,122,62,.6);opacity:0;pointer-events:none;transition:opacity .3s;z-index:100;white-space:nowrap}
+.toast.show{opacity:1}
+.toast.error{background:var(--acc)}
+.loading{display:none;text-align:center;padding:60px;color:var(--soft);font-size:14px}
+.loading.show{display:block}
+.spinner{display:inline-block;width:24px;height:24px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+<div class="emergency-banner">⚠ 緊急用ツール（LINE不要） — 記録はLIFFアプリと同じGASに保存されます</div>
+
+<div class="hdr">
+  <div style="flex:1">
+    <div class="hdr-title">工程進捗を入力</div>
+  </div>
+  <div class="hdr-badge">緊急入力</div>
+</div>
+
+<div class="body mode-工程移動" id="formBody">
+
+  <!-- モードタブ -->
+  <div class="mode-tabs">
+    <button class="mtab" data-mode="外部入荷"    onclick="switchMode('外部入荷')"><span class="icon">🆕</span>入荷</button>
+    <button class="mtab active" data-mode="工程移動" onclick="switchMode('工程移動')"><span class="icon">🔄</span>移動</button>
+    <button class="mtab" data-mode="出荷数更新"  onclick="switchMode('出荷数更新')"><span class="icon">📦</span>出荷数</button>
+    <button class="mtab" data-mode="生産目標更新" onclick="switchMode('生産目標更新')"><span class="icon">🎯</span>目標</button>
+    <button class="mtab" data-mode="修正"        onclick="switchMode('修正')"><span class="icon">🔧</span>修正</button>
+    <button class="mtab" data-mode="ログ"        onclick="switchMode('ログ')"><span class="icon">📋</span>ログ</button>
+  </div>
+
+  <!-- 工場タブ -->
+  <div class="factory-tabs">
+    <button class="ftab active" data-factory="kamiki"   onclick="switchFactory('kamiki')">🏭 神木</button>
+    <button class="ftab"        data-factory="nishio"   onclick="switchFactory('nishio')">🏭 西尾</button>
+    <button class="ftab"        data-factory="hiramoto" onclick="switchFactory('hiramoto')">🏭 平本靴下</button>
+    <button class="ftab"        data-factory="takagaki" onclick="switchFactory('takagaki')">🏭 高垣</button>
+  </div>
+
+  <!-- 商品タイプタブ -->
+  <div class="type-tabs">
+    <button class="ttab active" data-type="tubu"   onclick="switchType('tubu')">つぶつぶ</button>
+    <button class="ttab"        data-type="kusumi" onclick="switchType('kusumi')">くすみ</button>
+    <button class="ttab"        data-type="linen"  onclick="switchType('linen')">リネン</button>
+    <button class="ttab"        data-type="usude"  onclick="switchType('usude')">薄手</button>
+    <button class="ttab"        data-type="links"  onclick="switchType('links')">リンクス</button>
+  </div>
+
+  <!-- セット情報 -->
+  <div class="set-info" id="setInfo">
+    <div class="context-box set-box">
+      <div class="ctx-title">🎁 セット品</div>
+      <div id="setComponents" style="font-size:13px;color:var(--set);line-height:1.8"></div>
+    </div>
+  </div>
+
+  <!-- 在庫コンテキスト -->
+  <div class="context-box" id="contextBox">
+    <div class="ctx-title">▼ 現在の状況</div>
+    <div id="contextContent">SKUを選択してください</div>
+  </div>
+
+  <!-- SKU -->
+  <div class="field field-sku">
+    <div class="field-label">SKU（色） <span class="req">必須</span></div>
+    <div class="sel-wrap">
+      <select id="skuSelect" onchange="onSkuChange()"></select>
+    </div>
+  </div>
+
+  <!-- 移動元 -->
+  <div class="field field-source">
+    <div class="field-label">移動元 <span class="req">必須</span></div>
+    <div class="pills" id="sourcePills"></div>
+  </div>
+
+  <!-- 移動先 -->
+  <div class="field field-dest">
+    <div class="field-label">移動先 <span class="req">必須</span></div>
+    <div class="pills" id="destPills"></div>
+    <div class="field-hint">※ 途中工程スキップOK</div>
+  </div>
+
+  <!-- 修正工程 -->
+  <div class="field field-fix">
+    <div class="field-label">修正する工程 <span class="req">必須</span></div>
+    <div class="pills" id="fixPills"></div>
+    <div class="current-val-box" id="currentValBox"><div id="currentValContent"></div></div>
+  </div>
+
+  <!-- フロープレビュー -->
+  <div class="flow">
+    <div class="from-to" id="flowText">―</div>
+    <div class="qty-disp" id="flowQty">― 個</div>
+  </div>
+
+  <!-- 数量 -->
+  <div class="field field-qty">
+    <div class="field-label" id="qtyLabel">数量 <span class="req">必須</span></div>
+    <div class="qty-row">
+      <input type="number" id="qtyInput" inputmode="numeric" placeholder="0" oninput="updateFlow()">
+      <div class="unit-box" id="unitDisplay">個</div>
+    </div>
+  </div>
+
+  <!-- 備考 -->
+  <div class="field field-memo">
+    <div class="field-label">備考（任意）</div>
+    <textarea id="memoInput" placeholder="例: 一部色ムラあり"></textarea>
+  </div>
+
+  <button class="submit-btn" onclick="submitForm()">この内容で記録する</button>
+
+  <div class="quick-row">
+    <button class="quick-btn" onclick="copyLast()">↻ 直前をコピー</button>
+    <button class="quick-btn" onclick="window.open('${DASHBOARD_URL}','_blank')">📊 ダッシュボード</button>
+  </div>
+
+  <!-- ログパネル -->
+  <div class="log-panel" id="logPanel">
+    <div class="log-list" id="logList"><div class="log-empty">読み込み中…</div></div>
+  </div>
+
+</div>
+
+<div class="loading" id="loadingScreen">
+  <div class="spinner"></div>
+  <div style="margin-top:12px">送信中…</div>
+</div>
+
+</div><!-- /page-wrap -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+const GAS_API_URL   = 'https://script.google.com/macros/s/AKfycbx9OJmADgkcN_HzcM_GQ7SoH573SFx7rdjj_a8-_Ew3gBCpa66QfvmVD3DUhJBGMcDt/exec';
+const DASHBOARD_URL = 'https://shibuyakoichi-droid.github.io/ec-tools/genba/dashboard.html';
+const KG_PER_PCS    = 0.030;
+
+const FACTORIES_CONFIG = [
+  { code:'kamiki',   label:'神木',     suffix:'KMK', stage:'神木さん' },
+  { code:'nishio',   label:'西尾',     suffix:'WSO', stage:'西尾さん' },
+  { code:'hiramoto', label:'平本靴下', suffix:'HRT', stage:'平本靴下さん' },
+  { code:'takagaki', label:'高垣',     suffix:'TKG', stage:'高垣さん' },
+];
+const TYPES_CONFIG = [
+  { code:'tubu',   name:'つぶつぶ' },
+  { code:'kusumi', name:'くすみ' },
+  { code:'linen',  name:'リネン' },
+  { code:'usude',  name:'薄手' },
+  { code:'links',  name:'リンクス' },
+];
+const SHARED_TYPES = ['tubu','kusumi'];
+
+const BASE_SKUS = {
+  shared: [['BL-KN','キナリ'],['BL-MOM','杢オートミール']],
+  tubu:   [['TBL-KNT','キナリツブ'],['TBL-SRT','シロツブ'],['TBL-CNP','カラーネップ']],
+  kusumi: [['KBL-DP','ダスティピンク'],['KBL-GR','グレー'],['KBL-OL','オリーブ'],['KBL-CG','チャコールグレー'],['KBL-MC','杢チャコール'],['KBL-MG','杢グレー']],
+  linen:  [['LBL-IV','【リネン】くすみアイボリー'],['LBL-MP','【リネン】ミルキーピンク'],['LBL-GR','【リネン】グレー'],['LBL-MB','【リネン】ミルクベージュ'],['LBL-MT','【リネン】ミント']],
+  usude:  [['UBL-KN','【薄手】キナリ'],['UBL-OAT','【薄手】オートミール'],['UBL-PP','【薄手】ベビーピンク'],['UBL-BB','【薄手】ベビーブルー'],['UBL-SG','【薄手】シルバーグレー'],['UBL-CG','【薄手】チャコールグレー'],['UBL-WH','【薄手】ホワイト']],
+  links:  [['LKBL-KN','キナリ'],['LKBL-KNT','キナリツブ'],['LKBL-AG','アールグレイ'],['LKBL-MG','杢グレー']],
+};
+
+const ALL_STAGES = ['神木さん','西尾さん','平本靴下さん','高垣さん','エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫','B品'];
+const FACTORY_STAGES = ['神木さん','西尾さん','平本靴下さん','高垣さん'];
+
+let masterSnapshot = {};
+let currentMode    = '工程移動';
+let currentFactory = 'kamiki';
+let currentType    = 'tubu';
+let selectedSource = null;
+let selectedDest   = null;
+let selectedFix    = null;
+let lastSubmission = null;
+
+function factoryConf() { return FACTORIES_CONFIG.find(f => f.code === currentFactory); }
+function productCode() {
+  if (currentType === 'links') return 'links-baby-leg-' + currentFactory;
+  return 'babyleg-' + currentType + '-' + currentFactory;
+}
+function skuSuffix() { const f = factoryConf(); return f ? '-' + f.suffix : ''; }
+
+function getSkusForCurrent() {
+  const sfx  = skuSuffix();
+  const type = currentType;
+  const skus = [];
+  if (SHARED_TYPES.includes(type)) {
+    BASE_SKUS.shared.forEach(b => skus.push({ code: b[0]+sfx, name: b[1], shared: true }));
+  }
+  (BASE_SKUS[type] || []).forEach(b => skus.push({ code: b[0]+sfx, name: b[1], shared: false }));
+  return skus;
+}
+
+function getCurrentSku() {
+  const code = document.getElementById('skuSelect').value;
+  return getSkusForCurrent().find(s => s.code === code);
+}
+
+async function init() {
+  await loadSnapshot();
+  renderStagePills();
+  renderFixPills();
+  renderSkuSelect();
+  switchMode('工程移動');
+  updateContext();
+}
+
+async function loadSnapshot() {
+  try {
+    const res  = await fetch(GAS_API_URL + '?action=getMasters');
+    const data = await res.json();
+    if (data.snapshot) masterSnapshot = data.snapshot;
+  } catch(e) { console.warn('snapshot load failed'); }
+}
+
+function switchFactory(code) {
+  currentFactory = code;
+  document.querySelectorAll('.ftab').forEach(t => t.classList.toggle('active', t.dataset.factory === code));
+  renderSkuSelect();
+  onSkuChange();
+}
+
+function switchType(code) {
+  currentType = code;
+  document.querySelectorAll('.ttab').forEach(t => t.classList.toggle('active', t.dataset.type === code));
+  renderSkuSelect();
+  onSkuChange();
+}
+
+function renderSkuSelect() {
+  const skus = getSkusForCurrent();
+  document.getElementById('skuSelect').innerHTML = skus.map(s =>
+    `<option value="${s.code}">${s.name}${s.shared ? ' ★共有' : ''}</option>`
+  ).join('');
+}
+
+function onSkuChange() { updateContext(); updateUnitDisplay(); updateFlow(); }
+
+function updateContext() {
+  const sku = getCurrentSku();
+  if (!sku) return;
+  document.getElementById('setInfo').classList.remove('show');
+
+  const snap      = masterSnapshot[sku.code] || {};
+  const factStage = factoryConf()?.stage || '神木さん';
+  const factKg    = snap[factStage] || 0;
+  const factPcs   = Math.round(factKg / KG_PER_PCS);
+  const physStock = snap.physStock != null ? snap.physStock : (snap['実在庫'] || 0);
+  const shipped   = snap.shipped   != null ? snap.shipped   : (snap['出荷数'] || 0);
+  const backlog   = snap.backlog   || 0;
+  const washing   = snap['洗濯']   || 0;
+
+  const stagePcs = ['エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫']
+    .reduce((s,st) => s + (snap[st] || 0), 0);
+  const processTotal = factPcs + stagePcs;
+  const diff = backlog - processTotal;
+
+  const parts = [];
+  if (factKg)                              parts.push(`${factStage}:${factKg}kg(≈${factPcs}個)`);
+  if (snap['エルアイシー(未縫製)'])        parts.push(`エ社(未):${snap['エルアイシー(未縫製)']}`);
+  if (snap['池本さん'])                    parts.push(`池本:${snap['池本さん']}`);
+  if (snap['刑務所'])                      parts.push(`刑務:${snap['刑務所']}`);
+  if (snap['エルアイシー(加工前)'])        parts.push(`エ社(加):${snap['エルアイシー(加工前)']}`);
+  if (washing)                             parts.push(`洗濯:${washing}`);
+  if (snap['内職'])                        parts.push(`内職:${snap['内職']}`);
+  if (physStock)                           parts.push(`手元:${physStock.toLocaleString()}`);
+
+  const sharedTag = sku.shared ? ' <span class="shared-badge">★共有</span>' : '';
+  const lines = [
+    `<b>${sku.code}${sharedTag}  ${sku.name}</b>`,
+    parts.length ? parts.join(' / ') : '在庫データなし',
+    `📦 手元在庫: ${physStock.toLocaleString()}個 ｜ 出荷済: ${shipped.toLocaleString()}個`
+  ];
+  if (backlog > 0) {
+    const diffLabel = diff > 0 ? `🔴 不足 +${diff}個` : diff < 0 ? `✅ 余裕 ${Math.abs(diff)}個` : '✅ ピッタリ';
+    lines.push(`📋 出荷残: ${backlog.toLocaleString()}個 → 工程${processTotal.toLocaleString()}個 ${diffLabel}`);
+  }
+
+  const box = document.getElementById('contextBox');
+  box.className = diff > 0 ? 'context-box warn' : 'context-box';
+  document.getElementById('contextContent').innerHTML = lines.join('<br>');
+}
+
+function renderStagePills() {
+  const src  = ALL_STAGES;
+  const dest = ['エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職','実在庫','B品','出荷'];
+  document.getElementById('sourcePills').innerHTML =
+    src.map(n => `<div class="pill" data-stage="${n}" onclick="pickSource(this)">${n}</div>`).join('');
+  document.getElementById('destPills').innerHTML =
+    dest.map(n => `<div class="pill" data-stage="${n}" onclick="pickDest(this)">${n}</div>`).join('');
+  selectedSource = selectedDest = null;
+}
+
+function renderFixPills() {
+  const stages = ALL_STAGES.concat(['出荷数']);
+  document.getElementById('fixPills').innerHTML =
+    stages.map(n => `<div class="pill" data-stage="${n}" onclick="pickFix(this)">${n}</div>`).join('');
+  selectedFix = null;
+}
+
+function pickSource(el) {
+  document.querySelectorAll('#sourcePills .pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected'); selectedSource = el.dataset.stage;
+  document.querySelectorAll('#destPills .pill').forEach(p => {
+    const same = p.dataset.stage === selectedSource;
+    p.classList.toggle('disabled', same);
+    if (same && selectedDest === p.dataset.stage) { p.classList.remove('selected'); selectedDest = null; }
+  });
+  updateUnitDisplay(); updateFlow();
+}
+
+function pickDest(el) {
+  if (el.classList.contains('disabled')) return;
+  document.querySelectorAll('#destPills .pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected'); selectedDest = el.dataset.stage;
+  updateUnitDisplay(); updateFlow();
+}
+
+function pickFix(el) {
+  document.querySelectorAll('#fixPills .pill').forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected'); selectedFix = el.dataset.stage;
+  updateCurrentVal(); updateUnitDisplay(); updateFlow();
+}
+
+function updateCurrentVal() {
+  const box = document.getElementById('currentValBox');
+  if (!selectedFix) { box.style.display='none'; return; }
+  const sku  = getCurrentSku();
+  const snap = sku ? (masterSnapshot[sku.code] || {}) : {};
+  const cur  = snap[selectedFix] != null ? snap[selectedFix] : 0;
+  const unit = FACTORY_STAGES.includes(selectedFix) ? 'kg' : '個';
+  document.getElementById('currentValContent').innerHTML = `<b>${selectedFix}</b>：現在 <b>${cur}${unit}</b>`;
+  box.style.display = '';
+}
+
+function updateUnitDisplay() {
+  const ud = document.getElementById('unitDisplay');
+  if (currentMode === '外部入荷') { ud.textContent = 'kg'; return; }
+  if (currentMode === '修正') {
+    ud.textContent = selectedFix && FACTORY_STAGES.includes(selectedFix) ? 'kg' : '個'; return;
+  }
+  ud.textContent = '個';
+}
+
+function switchMode(mode) {
+  currentMode = mode;
+  const body  = document.getElementById('formBody');
+  body.className = 'body mode-' + mode;
+
+  document.querySelectorAll('.mtab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+
+  document.getElementById('qtyLabel').innerHTML = {
+    '出荷数更新':   '今回の出荷数（個） <span class="req">必須</span>',
+    '生産目標更新': '生産目標数（個） <span class="req">必須</span>',
+    '修正':         '修正後の数値 <span class="req">必須</span>'
+  }[mode] || '数量 <span class="req">必須</span>';
+
+  selectedSource = selectedDest = selectedFix = null;
+  document.querySelectorAll('#sourcePills .pill,#destPills .pill,#fixPills .pill')
+    .forEach(p => p.classList.remove('selected','disabled'));
+  document.getElementById('currentValBox').style.display = 'none';
+  document.getElementById('setInfo').classList.remove('show');
+
+  updateUnitDisplay(); updateFlow();
+  if (mode === 'ログ') loadLogs();
+}
+
+function updateFlow() {
+  const qty  = document.getElementById('qtyInput').value || '―';
+  const unit = document.getElementById('unitDisplay').textContent;
+  const f    = factoryConf();
+  let text   = '―', sub = `${qty} ${unit}`;
+
+  if      (currentMode === '外部入荷')    { text = `外部 → ${f?.stage || '工場'}`; }
+  else if (currentMode === '工程移動')    { text = `${selectedSource || '?'} → ${selectedDest || '?'}`; }
+  else if (currentMode === '出荷数更新')  { text = `実在庫から ${qty} 個 を出荷`; sub = `実在庫 -${qty} / 出荷数 +${qty}`; }
+  else if (currentMode === '生産目標更新'){ text = `生産目標を ${qty} 個 にセット`; sub = ''; }
+  else if (currentMode === '修正')        { text = selectedFix ? `${selectedFix} を ${qty} ${unit} に修正` : '工程を選択'; sub = ''; }
+
+  document.getElementById('flowText').innerHTML = text.replace(/→/g, '<span class="arrow">→</span>');
+  document.getElementById('flowQty').textContent = sub;
+}
+
+async function loadLogs() {
+  document.getElementById('logList').innerHTML = '<div class="log-empty">読み込み中…</div>';
+  try {
+    const res  = await fetch(GAS_API_URL + '?action=getLogs&limit=20');
+    const data = await res.json();
+    renderLogs(data.logs || []);
+  } catch { document.getElementById('logList').innerHTML = '<div class="log-empty">読み込みに失敗しました</div>'; }
+}
+
+function renderLogs(logs) {
+  if (!logs.length) { document.getElementById('logList').innerHTML = '<div class="log-empty">ログがありません</div>'; return; }
+  const chip = m => {
+    if (m==='工程移動') return 'mc-move'; if (m==='外部入荷') return 'mc-in';
+    if (m==='出荷数更新') return 'mc-ship'; if (m==='在庫修正') return 'mc-fix';
+    return 'mc-other';
+  };
+  document.getElementById('logList').innerHTML = logs.map(l => {
+    const ts  = l.timestamp ? new Date(l.timestamp).toLocaleString('ja-JP',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+    const src = l.source && l.source!=='—' ? l.source+' → ' : '';
+    const dst = l.dest   && l.dest  !=='—' ? l.dest : '';
+    return `<div class="log-item">
+      <div class="log-time">${ts}</div>
+      <span class="log-mode-badge ${chip(l.mode)}">${l.mode}</span>
+      <div class="log-body">${l.skuName||l.skuCode||''} <b>${l.qty}${l.unit||'個'}</b>${src||dst ? '　'+src+dst : ''}</div>
+      ${l.memo ? `<div class="log-footer">📝 ${l.memo}</div>` : ''}
+      <div class="log-footer">👤 ${l.user||'—'}</div>
+    </div>`;
+  }).join('');
+}
+
+async function submitForm() {
+  const sku  = getCurrentSku();
+  const qty  = parseFloat(document.getElementById('qtyInput').value);
+  const memo = document.getElementById('memoInput').value;
+  const unit = document.getElementById('unitDisplay').textContent;
+  const f    = factoryConf();
+
+  if (!qty || qty <= 0) return showToast('数量を入力してください', true);
+  if (currentMode === '工程移動' && (!selectedSource || !selectedDest)) return showToast('移動元・移動先を選択してください', true);
+  if (currentMode === '修正'     && !selectedFix)                       return showToast('修正する工程を選択してください', true);
+
+  const payload = {
+    action:'recordEntry', timestamp:new Date().toISOString(),
+    user:'緊急入力', userId:'emergency',
+    mode: currentMode === '修正' ? '在庫修正' : currentMode,
+    product: productCode(),
+    skuCode: sku.code, skuName: sku.name,
+    source: ['外部入荷','出荷数更新','生産目標更新','修正'].includes(currentMode) ? '—' : selectedSource,
+    dest:   currentMode === '外部入荷'    ? f.stage
+          : currentMode === '修正'        ? selectedFix
+          : ['出荷数更新','生産目標更新'].includes(currentMode) ? '—'
+          : selectedDest,
+    qty, unit, memo
+  };
+
+  document.getElementById('formBody').style.display = 'none';
+  document.getElementById('loadingScreen').classList.add('show');
+  try {
+    const res    = await fetch(GAS_API_URL, { method:'POST', body:JSON.stringify(payload) });
+    const result = await res.json();
+    if (!result.success) throw new Error(result.error || 'Unknown error');
+    lastSubmission = payload;
+    showToast('✓ 記録しました');
+    resetForm();
+  } catch(e) {
+    showToast('送信失敗: ' + e.message, true);
+  } finally {
+    document.getElementById('loadingScreen').classList.remove('show');
+    document.getElementById('formBody').style.display = '';
+  }
+}
+
+function resetForm() {
+  document.getElementById('qtyInput').value  = '';
+  document.getElementById('memoInput').value = '';
+  switchMode(currentMode);
+}
+
+function copyLast() {
+  if (!lastSubmission) return showToast('直前の入力がありません', true);
+  const mode = lastSubmission.mode === '在庫修正' ? '修正' : lastSubmission.mode;
+  switchMode(mode);
+  const m = lastSubmission.product?.match(/babyleg-(\w+)-(\w+)/);
+  if (m) { switchType(m[1]); switchFactory(m[2]); }
+  document.getElementById('skuSelect').value = lastSubmission.skuCode;
+  setTimeout(() => {
+    if (lastSubmission.source && lastSubmission.source !== '—') {
+      const p = document.querySelector(`#sourcePills .pill[data-stage="${lastSubmission.source}"]`);
+      if (p) p.click();
+    }
+    if (lastSubmission.dest && lastSubmission.dest !== '—') {
+      const p = document.querySelector(`#destPills .pill[data-stage="${lastSubmission.dest}"]`);
+      if (p) p.click();
+    }
+    document.getElementById('qtyInput').value = lastSubmission.qty;
+    updateFlow();
+  }, 0);
+}
+
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.toggle('error', !!isError);
+  t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+init();
+</script>
+</body>
+</html>
