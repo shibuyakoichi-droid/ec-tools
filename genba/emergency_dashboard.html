@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工程ダッシュボード（緊急ライン） — SOWAN</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f1ea;--card:#fffdf8;--ink:#1a1a1a;--soft:#6b6357;--line:#d4cdbf;--acc:#a64635;--acc-s:#c9826f;--acc-bg:#fdf3ee;--ok:#5a7a3e;--ok-bg:#f4f8ec;--warn:#b8842a;--warn-bg:#fcf6e8;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{font-family:"Noto Sans JP",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:14px}
+
+.emergency-banner{background:#fff3cd;border-bottom:1px solid #ffc107;color:#856404;padding:7px 16px;font-size:12px;font-weight:700;text-align:center}
+.header{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}
+.header-main{padding:14px 16px 8px;display:flex;align-items:center;justify-content:space-between}
+.header-brand{font-family:"Shippori Mincho",serif;font-size:17px;font-weight:700}
+.header-sub{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--soft);letter-spacing:.08em;margin-top:2px}
+.refresh-btn{display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:11px;font-family:inherit;color:var(--soft);cursor:pointer;flex-shrink:0}
+.refresh-icon{display:inline-block}
+.refreshing .refresh-icon{animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.last-updated{font-family:"JetBrains Mono",monospace;font-size:10px;color:var(--soft);text-align:right;padding:0 16px 8px}
+.header-banner{padding:8px 16px;font-size:12px;font-weight:700;border-top:1px solid var(--line)}
+.header-banner.ok{background:var(--ok-bg);color:var(--ok)}
+.header-banner.ng{background:var(--acc-bg);color:var(--acc)}
+.banner-link{color:inherit;text-decoration:underline;background:none;border:none;padding:0 2px;font-size:inherit;font-weight:inherit;font-family:inherit;cursor:pointer}
+
+.product-tabs{display:flex;gap:0;background:var(--card);border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
+.product-tabs::-webkit-scrollbar{display:none}
+.ptab{flex:1;min-width:90px;padding:12px 8px;font-size:12px;font-weight:700;background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit;color:var(--soft);text-align:center;transition:all .15s;white-space:nowrap}
+.ptab.active{color:#1a4a2e;border-bottom-color:#1a4a2e}
+
+.content{padding:16px;max-width:1200px;margin:0 auto;padding-bottom:60px}
+@media(min-width:768px){.content{padding:20px 24px 60px}}
+.sec{font-family:"Shippori Mincho",serif;font-size:12px;font-weight:700;color:var(--soft);letter-spacing:.08em;margin:18px 0 10px;text-transform:uppercase}
+.dpanel{display:none}.dpanel.active{display:block}
+
+.race{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px}
+@media(min-width:768px){.race{grid-template-columns:repeat(4,1fr)}}
+.race-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center}
+.race-card.ok{background:var(--ok-bg);border-color:var(--ok)}
+.race-card.ng{background:var(--acc-bg);border-color:var(--acc-s)}
+.race-lbl{font-size:10px;color:var(--soft);margin-bottom:5px;line-height:1.4}
+.race-val{font-family:"JetBrains Mono",monospace;font-size:20px;font-weight:700;line-height:1}
+.race-card.ok .race-val{color:var(--ok)}.race-card.ng .race-val{color:var(--acc)}
+.race-unit{font-size:9px;color:var(--soft);margin-top:3px;font-family:"JetBrains Mono",monospace}
+
+.chain-wrap{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 14px;overflow-x:auto;scrollbar-width:thin}
+.chain{display:flex;align-items:center;min-width:max-content}
+.cn{display:flex;flex-direction:column;align-items:center;min-width:58px}
+.cn-name{font-size:9px;color:var(--soft);margin-bottom:4px;white-space:nowrap;text-align:center}
+.cn-badge{width:44px;height:44px;border-radius:50%;background:var(--bg);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:"JetBrains Mono",monospace;font-size:11px;font-weight:700;text-align:center;line-height:1.2}
+.cn-badge.has{background:var(--acc-bg);border-color:var(--acc-s);color:var(--acc)}
+.chain-ar{color:var(--line);font-size:14px;padding:0 2px;flex-shrink:0;margin-bottom:6px}
+
+.matrix-wrap{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.matrix-scroll{overflow-x:auto}
+table.matrix{width:100%;border-collapse:collapse;font-size:12px;min-width:760px}
+table.matrix th{background:var(--bg);padding:8px 6px;text-align:center;font-size:10px;color:var(--soft);font-weight:700;border-bottom:1px solid var(--line);white-space:nowrap;line-height:1.4}
+table.matrix th:first-child{text-align:left;padding-left:14px}
+table.matrix td{padding:9px 6px;text-align:center;border-bottom:1px solid var(--line);font-family:"JetBrains Mono",monospace}
+table.matrix td:first-child{text-align:left;padding-left:14px;font-family:"Noto Sans JP",sans-serif;font-size:11px;font-weight:700;white-space:nowrap}
+table.matrix tr:last-child td{border-bottom:none}
+table.matrix tr.ng-row td{background:var(--acc-bg)}
+table.matrix tr.ng-row td:first-child{color:var(--acc)}
+.diff-ok{color:var(--ok);font-weight:700}.diff-ng{color:var(--acc);font-weight:700}.diff-zero{color:var(--soft)}
+.col-prog{background:rgba(90,122,62,.06);font-weight:700;color:var(--ok)}
+.ng-row .col-prog{background:rgba(166,70,53,.08);color:var(--acc)}
+.sku-name{display:block;font-weight:400;color:var(--soft);font-size:10px;margin-top:1px}
+.cell-zero{color:#cfc8ba}
+tr[id]{scroll-margin-top:150px}
+
+.log-filter{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.log-filter select{padding:7px 10px;font-size:12px;background:var(--card);border:1px solid var(--line);border-radius:7px;font-family:inherit;color:var(--ink);appearance:none;-webkit-appearance:none;min-width:140px}
+.log-list{display:flex;flex-direction:column;gap:8px}
+.log-item{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.log-time{font-size:10px;color:var(--soft);font-family:"JetBrains Mono",monospace;margin-bottom:4px}
+.log-mode-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-bottom:4px}
+.mc-move{background:#eef4fc;color:#3d6fa8}.mc-in{background:var(--ok-bg);color:var(--ok)}
+.mc-ship{background:var(--warn-bg);color:var(--warn)}.mc-fix{background:#f5f0ff;color:#6b2fa0}
+.mc-target{background:#eef9f0;color:#1a4a2e}.mc-other{background:var(--bg);color:var(--soft)}
+.log-body{color:var(--ink);line-height:1.6;font-size:12px}
+.log-footer{font-size:10px;color:var(--soft);margin-top:3px}
+.log-empty{text-align:center;padding:32px;color:var(--soft);font-size:13px}
+
+.loading{display:none;position:fixed;inset:0;background:rgba(245,241,234,.85);align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:50;font-size:13px;color:var(--soft)}
+.loading.show{display:flex}
+.spinner{width:28px;height:28px;border:2px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:spin .8s linear infinite}
+.bottom-nav{margin-top:28px;text-align:center}
+.bottom-link{font-size:12px;color:var(--soft);text-decoration:none}
+.bottom-link:hover{color:var(--acc)}
+</style>
+</head>
+<body>
+
+<div class="emergency-banner">⚠ 緊急ライン専用ダッシュボード（足首ウォーマー / ヘアバンド / クロスヘアバンド）</div>
+
+<div class="header">
+  <div class="header-main">
+    <div>
+      <div class="header-brand">SOWAN 工程管理（緊急ライン）</div>
+      <div class="header-sub" id="headerSub">PIPELINE DASHBOARD</div>
+    </div>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
+      <span class="refresh-icon">↻</span>&nbsp;更新
+    </button>
+  </div>
+  <div class="last-updated" id="lastUpdated">読み込み中...</div>
+  <div class="header-banner" id="bannerInHeader" style="display:none"></div>
+</div>
+
+<div class="product-tabs">
+  <button class="ptab active" data-product="hira-asi"       onclick="switchProduct('hira-asi')">足首ウォーマー</button>
+  <button class="ptab"        data-product="baby-band"      onclick="switchProduct('baby-band')">ベビーヘアバンド</button>
+  <button class="ptab"        data-product="cross-babyband" onclick="switchProduct('cross-babyband')">クロスヘアバンド</button>
+  <button class="ptab"        data-product="log"            onclick="switchProduct('log')">📋 ログ</button>
+</div>
+
+<div class="content">
+
+  <div class="dpanel active" id="dpanel-hira-asi"></div>
+  <div class="dpanel"        id="dpanel-baby-band"></div>
+  <div class="dpanel"        id="dpanel-cross-babyband"></div>
+
+  <div class="dpanel" id="dpanel-log">
+    <div class="sec" style="margin-top:4px">操作ログ（緊急ライン）</div>
+    <div class="log-filter">
+      <select id="logModeFilter" onchange="applyLogFilter()">
+        <option value="">操作: すべて</option>
+        <option value="工程移動">工程移動</option>
+        <option value="外部入荷">外部入荷</option>
+        <option value="出荷数更新">出荷数更新</option>
+        <option value="在庫修正">在庫修正</option>
+        <option value="生産目標更新">生産目標更新</option>
+      </select>
+    </div>
+    <div class="log-list" id="logList">
+      <div class="log-empty">「更新」ボタンを押してください</div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <a href="../genba_emergency.html" class="bottom-link">← 入力フォームに戻る</a>
+  </div>
+</div>
+
+<div class="loading" id="loading">
+  <div class="spinner"></div><span>データ取得中...</span>
+</div>
+
+<script>
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbx9OJmADgkcN_HzcM_GQ7SoH573SFx7rdjj_a8-_Ew3gBCpa66QfvmVD3DUhJBGMcDt/exec';
+const REFRESH_MS  = 5 * 60 * 1000;
+
+const PRODUCTS = [
+  { code:'hira-asi', name:'足首ウォーマー', skus:[
+    ['HA-KB','くすみベージュ'],['HA-BK','ブラック'],['HA-GR','グレー'],['HA-OL','オリーブ'],['HA-CG','チャコールグレー'] ] },
+  { code:'baby-band', name:'ベビーヘアバンド', skus:[
+    ['BBAND-IV','アイボリー'],['BBAND-OAT','オートミール'],['BBAND-CG','チャコールグレー'],['BBAND-DP','ダスティピンク'] ] },
+  { code:'cross-babyband', name:'クロスヘアバンド', skus:[
+    ['XBAND-IV','アイボリー'],['XBAND-CG','チャコールグレー'],['XBAND-DP','ダスティピンク'],['XBAND-OAT','オートミール'] ] },
+];
+const ALL_SKU_PREFIXES = ['HA-','BBAND-','XBAND-'];
+
+// 工程内（進捗にカウントする工場〜内職）
+const FACTORY_STAGES = ['神木さん','西尾さん','平本靴下さん','高垣さん'];
+const MID_STAGES     = ['エルアイシー(未縫製)','池本さん','刑務所','エルアイシー(加工前)','洗濯','内職'];
+const PROC_STAGES    = FACTORY_STAGES.concat(MID_STAGES);
+
+let masterData     = { snapshot:{} };
+let allLogs        = [];
+let currentProduct = 'hira-asi';
+let refreshTimer   = null;
+
+const val = (snap,st) => Number(snap[st]||0);
+function sumStages(snap,list){ return list.reduce((s,st)=>s+val(snap,st),0); }
+function getInProcess(snap){ return sumStages(snap,PROC_STAGES); }
+function getPhysStock(snap){ return snap.physStock!=null?Number(snap.physStock):val(snap,'実在庫'); }
+function getProduced(snap){ return getInProcess(snap)+getPhysStock(snap); }   // 進捗 = 工程内 + 実在庫
+function getRemaining(snap){ const t=Number(snap.target||0); return t>0 ? t-getProduced(snap) : null; } // +まだ作る / -超過
+
+// ── 商品切替 ──
+function switchProduct(code) {
+  currentProduct = code;
+  document.querySelectorAll('.ptab').forEach(t => t.classList.toggle('active', t.dataset.product === code));
+  document.querySelectorAll('.dpanel').forEach(p => p.classList.remove('active'));
+  document.getElementById('dpanel-' + code).classList.add('active');
+  const p = PRODUCTS.find(x=>x.code===code);
+  document.getElementById('headerSub').textContent = code==='log' ? 'OPERATION LOG' : (p? p.name+' — PIPELINE':'');
+  updateBanner();
+  if (code === 'log') loadLogs();
+}
+
+// ── データ取得 ──
+async function loadData() {
+  document.getElementById('refreshBtn').classList.add('refreshing');
+  document.getElementById('loading').classList.add('show');
+  try {
+    const res  = await fetch(GAS_API_URL + '?action=getMasters');
+    masterData = await res.json();
+    if (!masterData.snapshot) masterData.snapshot = {};
+  } catch { masterData = { snapshot:{} }; }
+
+  const now = new Date();
+  document.getElementById('lastUpdated').textContent =
+    '最終更新: ' + now.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}) + '　(5分ごと自動更新)';
+
+  PRODUCTS.forEach(renderProduct);
+  updateBanner();
+
+  document.getElementById('refreshBtn').classList.remove('refreshing');
+  document.getElementById('loading').classList.remove('show');
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(loadData, REFRESH_MS);
+  if (currentProduct === 'log') loadLogs();
+}
+
+// ── バナー（目標未達の色） ──
+function updateBanner() {
+  const el = document.getElementById('bannerInHeader');
+  if (currentProduct === 'log') { el.style.display='none'; return; }
+  const p = PRODUCTS.find(x=>x.code===currentProduct);
+  if (!p) { el.style.display='none'; return; }
+  const short = [];
+  p.skus.forEach(([code,name]) => {
+    const snap = masterData.snapshot[code]||{};
+    const rem  = getRemaining(snap);
+    if (rem!=null && rem>0) short.push({code,name,rem});
+  });
+  el.style.display = '';
+  if (short.length) {
+    el.className = 'header-banner ng';
+    el.innerHTML = '⚠️ 目標まで残り: ' + short.map(s=>`<button class="banner-link" onclick="jumpTo('sku-${s.code}')">${s.name} +${s.rem}</button>`).join('、');
+  } else {
+    el.className = 'header-banner ok';
+    el.textContent = '✓ ' + p.name + ' — 目標設定分はすべて達成';
+  }
+}
+
+function jumpTo(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); }
+
+// ── 商品パネル描画 ──
+function renderProduct(p) {
+  const panel = document.getElementById('dpanel-' + p.code);
+
+  let totTarget=0, totProduced=0, totInProc=0, totStock=0;
+  p.skus.forEach(([code]) => {
+    const snap = masterData.snapshot[code]||{};
+    totTarget   += Number(snap.target||0);
+    totProduced += getProduced(snap);
+    totInProc   += getInProcess(snap);
+    totStock    += getPhysStock(snap);
+  });
+  const remaining = totTarget>0 ? totTarget-totProduced : null;
+
+  // サプライチェーン（商品合算）
+  const sum = st => p.skus.reduce((s,[code])=>s+val(masterData.snapshot[code]||{},st),0);
+  const factory = FACTORY_STAGES.reduce((s,st)=>s+sum(st),0);
+  const kachi   = sum('池本さん')+sum('刑務所');
+  const node = (nm,v,sub)=>`<div class="cn"><div class="cn-name">${nm}</div><div class="cn-badge${v>0?' has':''}">${v}</div><div class="cn-name" style="margin-top:3px">${sub||''}</div></div>`;
+  const ar = '<div class="chain-ar">→</div>';
+  const chainHTML =
+      node('工場(編立)', factory, '')
+    + ar + node('エ社(未)', sum('エルアイシー(未縫製)'), '')
+    + ar + node('加工', kachi, '池本+刑務所')
+    + ar + node('エ社(加)', sum('エルアイシー(加工前)'), '')
+    + ar + node('洗濯', sum('洗濯'), '')
+    + ar + node('内職', sum('内職'), '')
+    + ar + node('実在庫', sum('実在庫'), '')
+    + ar + node('B品', sum('B品'), '');
+
+  const rows = p.skus.map(([code,name]) => {
+    const snap = masterData.snapshot[code]||{};
+    const target   = Number(snap.target||0);
+    const produced = getProduced(snap);
+    const rem      = getRemaining(snap);
+    const physStock= getPhysStock(snap);
+    const factoryS = FACTORY_STAGES.reduce((s,st)=>s+val(snap,st),0);
+    const c = v => v>0 ? v : '<span class="cell-zero">0</span>';
+    const remCls = rem==null?'diff-zero':rem>0?'diff-ng':'diff-ok';
+    const remTxt = rem==null?'—':(rem>0?'+':'')+rem;
+    return `<tr id="sku-${code}" class="${rem!=null&&rem>0?'ng-row':''}">
+      <td>${name}<span class="sku-name">${code}</span></td>
+      <td>${c(factoryS)}</td>
+      <td>${c(val(snap,'エルアイシー(未縫製)'))}</td>
+      <td>${c(val(snap,'池本さん'))}</td>
+      <td>${c(val(snap,'刑務所'))}</td>
+      <td>${c(val(snap,'エルアイシー(加工前)'))}</td>
+      <td>${c(val(snap,'洗濯'))}</td>
+      <td>${c(val(snap,'内職'))}</td>
+      <td>${c(physStock)}</td>
+      <td>${c(val(snap,'B品'))}</td>
+      <td class="col-prog">${produced}</td>
+      <td>${target>0?target.toLocaleString():'—'}</td>
+      <td class="${remCls}">${remTxt}</td>
+    </tr>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="sec">PIPELINE RACE — ${p.name}</div>
+    <div class="race">
+      <div class="race-card">
+        <div class="race-lbl">目 標 合 計</div>
+        <div class="race-val">${totTarget>0?totTarget.toLocaleString():'未設定'}</div>
+        <div class="race-unit">個</div>
+      </div>
+      <div class="race-card ok">
+        <div class="race-lbl">進 捗（工程＋在庫）</div>
+        <div class="race-val">${totProduced.toLocaleString()}</div>
+        <div class="race-unit">個</div>
+      </div>
+      <div class="race-card ${remaining==null?'':remaining>0?'ng':'ok'}">
+        <div class="race-lbl">目 標 ま で</div>
+        <div class="race-val">${remaining==null?'—':(remaining>0?'+':'')+remaining.toLocaleString()}</div>
+        <div class="race-unit">＋不足 ／ −超過</div>
+      </div>
+      <div class="race-card">
+        <div class="race-lbl">実 在 庫</div>
+        <div class="race-val">${totStock.toLocaleString()}</div>
+        <div class="race-unit">個</div>
+      </div>
+    </div>
+    <div class="sec">SUPPLY CHAIN — ${p.name}</div>
+    <div class="chain-wrap"><div class="chain">${chainHTML}</div></div>
+    <div class="sec">SKU MATRIX — ${p.name}</div>
+    <div class="matrix-wrap"><div class="matrix-scroll">
+      <table class="matrix">
+        <thead><tr>
+          <th>カラー / SKU</th><th>工場</th><th>エ社(未)</th><th>池本</th><th>刑務所</th>
+          <th>エ社(加)</th><th>洗濯</th><th>内職</th><th>実在庫</th><th>B品</th>
+          <th>進捗</th><th>目標</th><th>残り</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div></div>`;
+}
+
+// ── ログ ──
+async function loadLogs() {
+  document.getElementById('logList').innerHTML = '<div class="log-empty">読み込み中…</div>';
+  try {
+    const res  = await fetch(GAS_API_URL + '?action=getLogs&limit=200');
+    const json = await res.json();
+    allLogs = (json.logs || []).filter(l => ALL_SKU_PREFIXES.some(pf => (l.skuCode||'').startsWith(pf)));
+    applyLogFilter();
+  } catch {
+    document.getElementById('logList').innerHTML = '<div class="log-empty">読み込みに失敗しました</div>';
+  }
+}
+
+function applyLogFilter() {
+  const mf = document.getElementById('logModeFilter').value;
+  renderLogs(allLogs.filter(l => !mf || l.mode===mf));
+}
+
+function renderLogs(logs) {
+  if (!logs.length) { document.getElementById('logList').innerHTML='<div class="log-empty">該当ログがありません</div>'; return; }
+  const chip = m => m==='工程移動'?'mc-move':m==='外部入荷'?'mc-in':m==='出荷数更新'?'mc-ship':m==='在庫修正'?'mc-fix':m==='生産目標更新'?'mc-target':'mc-other';
+  document.getElementById('logList').innerHTML = logs.map(l => {
+    const ts  = l.timestamp?new Date(l.timestamp).toLocaleString('ja-JP',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+    const src = l.source&&l.source!=='—'?l.source+' → ':'';
+    const dst = l.dest&&l.dest!=='—'?l.dest:'';
+    return `<div class="log-item">
+      <div class="log-time">${ts}</div>
+      <span class="log-mode-badge ${chip(l.mode)}">${l.mode}</span>
+      <div class="log-body">${l.skuName||l.skuCode||''} <b>${l.qty}${l.unit||'個'}</b>${src||dst?'　'+src+dst:''}</div>
+      ${l.memo?`<div class="log-footer">📝 ${l.memo}</div>`:''}
+      <div class="log-footer">👤 ${l.user||'—'}</div>
+    </div>`;
+  }).join('');
+}
+
+loadData();
+</script>
+</body>
+</html>
