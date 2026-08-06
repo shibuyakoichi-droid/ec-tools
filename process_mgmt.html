@@ -149,9 +149,11 @@ tr:hover td{background:#faf9f7}
         <option value="">時点: 現在の在庫</option>
       </select>
       <button class="btn sm" id="stale-btn" onclick="toggleStaleFilter()" title="最終更新から2ヶ月以上経過したものだけ表示">🟠 停滞中のみ</button>
-      <button class="btn sm" onclick="openSnapshotModal()" style="margin-left:auto" title="いまの在庫を「◯月末時点」として保存し、あとから見返せるようにします">📸 時点を記録</button>
-      <button class="btn sm" onclick="exportAll()" title="生地・商品・坂本繊維在庫をまとめてCSVで保存">⬇ まとめてCSV</button>
-      <button class="btn sm" onclick="mergeDuplicates()" style="color:#888">重複をまとめる</button>
+      <div style="display:flex;gap:8px;margin-left:auto">
+        <button class="btn sm" id="snap-btn" onclick="openSnapshotModal()" style="display:none" title="いまの在庫を「◯月末時点」として保存し、あとから見返せるようにします">📸 時点を記録</button>
+        <button class="btn sm" onclick="exportAll()" title="生地・商品・坂本繊維在庫をまとめてCSVで保存">⬇ まとめてCSV</button>
+        <button class="btn sm" onclick="mergeDuplicates()" style="color:#888">重複をまとめる</button>
+      </div>
     </div>
     <div id="snapshot-banner" style="display:none;background:#eef4fa;border:1px solid #b8d4f0;color:#1a5fa0;border-radius:8px;padding:9px 14px;font-size:13px;margin-bottom:14px">
       <span id="snapshot-banner-text"></span>
@@ -509,6 +511,7 @@ let productSortDir=null;
 let lastFabricRows=[], lastProductRows=[]; // いま画面に出ている行（CSV出力用）
 // 時点表示：snapDate が空なら現在の在庫、日付が入っていればその時点の記録を見ている
 let snapshotList=[], snapDate='', snapLabel='', snapFabrics=[], snapProducts=[], snapSakamoto=[];
+let snapTableReady=false; // stock_snapshots テーブルがあるか
 const inSnapshot=()=>!!snapDate;
 const srcFabrics =()=>snapDate?snapFabrics :fabrics;
 const srcProducts=()=>snapDate?snapProducts:products;
@@ -1271,22 +1274,36 @@ async function saveEdit(){
 
 // ---- 時点スナップショット ----
 // stock_snapshots に「◯月末時点」の在庫をまるごと保存しておき、あとから表示・CSV出力する
+// 時点データの置き場所は2つある。
+//  file … リポジトリ同梱の snapshots/*.json（棚卸しxlsxを取り込むときに一緒に作る）
+//  db   … Supabaseの stock_snapshots（sql/stock_snapshots.sql を流すと「📸 時点を記録」が使えるようになる）
 async function loadSnapshotList(){
+  const list=[];
   const{data,error}=await sb.from('stock_snapshots')
     .select('snapshot_date,label').order('snapshot_date',{ascending:false});
-  if(error){
-    // テーブル未作成でもツール本体は動かす（sql/stock_snapshots.sql を実行すれば有効になる）
-    console.warn('stock_snapshots 未作成:',error.message);
-    document.getElementById('map-snapshot').style.display='none';
-    return;
-  }
-  const seen=new Map();
-  (data||[]).forEach(r=>{if(!seen.has(r.snapshot_date))seen.set(r.snapshot_date,r.label||'');});
-  snapshotList=[...seen].map(([date,label])=>({date,label}));
+  snapTableReady=!error;
+  if(error) console.info('stock_snapshots 未作成のため、ファイルの時点だけを表示します:',error.message);
+  else (data||[]).forEach(r=>{
+    if(!list.some(x=>x.date===r.snapshot_date))
+      list.push({date:r.snapshot_date,label:r.label||'',src:'db'});
+  });
+  try{
+    const res=await fetch('snapshots/index.json',{cache:'no-store'});
+    if(res.ok) (await res.json()).forEach(s=>{
+      if(!list.some(x=>x.date===s.date))
+        list.push({date:s.date,label:s.label||'',src:'file',file:s.file});
+    });
+  }catch(e){console.info('snapshots/index.json を読めませんでした',e);}
+
+  list.sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0);
+  snapshotList=list;
   const sel=document.getElementById('map-snapshot');
+  sel.style.display=list.length?'':'none';
   sel.innerHTML='<option value="">時点: 現在の在庫</option>'
-    +snapshotList.map(s=>`<option value="${s.date}">${s.date}${s.label?' — '+s.label:''}</option>`).join('');
+    +list.map(s=>`<option value="${s.date}">${s.date}${s.label?' — '+s.label:''}</option>`).join('');
   sel.value=snapDate;
+  const btn=document.getElementById('snap-btn');
+  if(btn)btn.style.display=snapTableReady?'':'none';
 }
 
 async function onSnapshotChange(){
@@ -1299,12 +1316,28 @@ async function onSnapshotChange(){
     renderAll();
     return;
   }
+  const entry=snapshotList.find(s=>s.date===snapDate)||{};
   setStatus('読み込み中…');
-  const{data,error}=await sb.from('stock_snapshots').select('*').eq('snapshot_date',snapDate);
+  let rows=null;
+  if(entry.src==='file'){
+    try{
+      const res=await fetch('snapshots/'+entry.file,{cache:'no-store'});
+      if(res.ok){
+        const j=await res.json();
+        rows=[
+          ...(j.fabrics ||[]).map(r=>({...r,kind:'fabric'})),
+          ...(j.products||[]).map(r=>({...r,kind:'product'})),
+          ...(j.sakamoto||[]).map(r=>({...r,kind:'sakamoto'})),
+        ].map((r,i)=>({...r,id:r.id||'snapf'+i}));
+      }
+    }catch(e){console.error(e);}
+  } else {
+    const{data,error}=await sb.from('stock_snapshots').select('*').eq('snapshot_date',snapDate);
+    if(!error)rows=data||[];
+  }
   setStatus('');
-  if(error){showAlert('時点データの読み込みに失敗しました','err');sel.value='';snapDate='';return;}
-  const rows=data||[];
-  snapLabel=(snapshotList.find(s=>s.date===snapDate)||{}).label||'';
+  if(!rows){showAlert('時点データの読み込みに失敗しました','err');sel.value='';snapDate='';return;}
+  snapLabel=entry.label||'';
   snapFabrics =rows.filter(r=>r.kind==='fabric') .map(r=>({...r,id:'snap'+r.id,qty:Number(r.qty)}));
   snapProducts=rows.filter(r=>r.kind==='product').map(r=>({...r,id:'snap'+r.id,qty:Number(r.qty)}));
   snapSakamoto=rows.filter(r=>r.kind==='sakamoto').map(r=>({...r,qty:Number(r.qty)}));

@@ -1,0 +1,1706 @@
+{
+ "date": "2026-07-13",
+ "label": "7月末棚卸しを取り込む前の状態",
+ "fabrics": [
+  {
+   "fabric_no": "3012-202NEP",
+   "color": "ソーピング",
+   "qty": 13,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "3012-202NEP",
+   "color": "下晒し",
+   "qty": 10,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "40/30SZ天竺",
+   "color": "GR3 杢オートミール",
+   "qty": 17,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "40/30SZ天竺",
+   "color": "アイボリー",
+   "qty": 3,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "40/30SZ天竺",
+   "color": "ピンク",
+   "qty": 3,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "40/30SZ天竺",
+   "color": "ブラック",
+   "qty": 5,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "4030A30",
+   "color": "ソーピング",
+   "qty": 15,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "4040A30",
+   "color": "カーキグレー",
+   "qty": 1,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "4040A30",
+   "color": "ベージュ",
+   "qty": 3,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "4040A30NEP",
+   "color": "ソーピング",
+   "qty": 4,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット",
+   "memo": ""
+  },
+  {
+   "fabric_no": "4040A30NEP",
+   "color": "ソーピング",
+   "qty": 10,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "4040A30NEP",
+   "color": "ホワイト",
+   "qty": 9,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "4040A30NEP",
+   "color": "ホワイト",
+   "qty": 4,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット",
+   "memo": ""
+  },
+  {
+   "fabric_no": "CEA-60",
+   "color": "チャコールグレー",
+   "qty": 2,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "CEA-60",
+   "color": "ブラック",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "EGE303P",
+   "color": "",
+   "qty": 37,
+   "location_id": "toyo_dye",
+   "location_name": "東陽染業",
+   "memo": ""
+  },
+  {
+   "fabric_no": "EGE303P",
+   "color": "ココア",
+   "qty": 6,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "EGE303P",
+   "color": "ココア",
+   "qty": 12,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "EGE303P",
+   "color": "ソーピング",
+   "qty": 6,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "EGE303P",
+   "color": "ベビーピンク",
+   "qty": 7,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "EGE303P",
+   "color": "ミストブルー",
+   "qty": 7,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "EGE303P",
+   "color": "ミルクベージュ",
+   "qty": 6,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "EGE303P",
+   "color": "ミルクベージュ",
+   "qty": 2,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "EGE303P",
+   "color": "ライトグレー",
+   "qty": 6,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "F66H",
+   "color": "アイボリー",
+   "qty": 8,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": ""
+  },
+  {
+   "fabric_no": "F66H",
+   "color": "ソーピング",
+   "qty": 5,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": ""
+  },
+  {
+   "fabric_no": "F66H",
+   "color": "ダスティピンク",
+   "qty": 3,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": ""
+  },
+  {
+   "fabric_no": "F66H",
+   "color": "ミルクベージュ",
+   "qty": 3,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": ""
+  },
+  {
+   "fabric_no": "F88",
+   "color": "",
+   "qty": 16,
+   "location_id": "concept_sew",
+   "location_name": "コンセプト",
+   "memo": ""
+  },
+  {
+   "fabric_no": "F88",
+   "color": "アッシュグレー",
+   "qty": 4,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット",
+   "memo": ""
+  },
+  {
+   "fabric_no": "F88",
+   "color": "ダスティピンク",
+   "qty": 4,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット",
+   "memo": ""
+  },
+  {
+   "fabric_no": "F88",
+   "color": "チャコール",
+   "qty": 4,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット",
+   "memo": ""
+  },
+  {
+   "fabric_no": "F88",
+   "color": "チャコールグレー",
+   "qty": 4,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット",
+   "memo": ""
+  },
+  {
+   "fabric_no": "FF100-38",
+   "color": "GR6",
+   "qty": 5,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "FF100-41",
+   "color": "GR6",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "FPI40",
+   "color": "チャコールグレー",
+   "qty": 4,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G40",
+   "color": "",
+   "qty": 16,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G40",
+   "color": "ソーピング",
+   "qty": 4,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55",
+   "color": "ダスティピンク",
+   "qty": 3,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "G55NEEP ホワイト",
+   "qty": 4,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "G55NEEP ホワイト",
+   "qty": 0,
+   "location_id": "kakogawa_prison",
+   "location_name": "加古川刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "G55NEP ソーピング",
+   "qty": 6,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "G55NEP ソーピング",
+   "qty": 0,
+   "location_id": "kakogawa_prison",
+   "location_name": "加古川刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "NEP Gray",
+   "qty": 6,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "アイボリー",
+   "qty": 6,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "アイボリー",
+   "qty": 8,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "アッシュグレー",
+   "qty": 4,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "アッシュグレー",
+   "qty": 8,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "オリーブ",
+   "qty": 6,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "グレージュ",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "ソーピング",
+   "qty": 12,
+   "location_id": "toyo_dye",
+   "location_name": "東陽染業",
+   "memo": "三美さんへ"
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "ダスティピンク",
+   "qty": 0,
+   "location_id": "soeing_itoh",
+   "location_name": "NEXIA(ネクシア)",
+   "memo": "エルアイシーより"
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "チャコール",
+   "qty": 3,
+   "location_id": "soeing_itoh",
+   "location_name": "NEXIA(ネクシア)",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "チャコール",
+   "qty": 2,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "ブラック",
+   "qty": 5,
+   "location_id": "soeing_itoh",
+   "location_name": "NEXIA(ネクシア)",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "ブラック",
+   "qty": 2,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "ミルクベージュ",
+   "qty": 8,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55-2376",
+   "color": "ミルクベージュ",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "G55NEP",
+   "color": "",
+   "qty": 26,
+   "location_id": "toyo_dye",
+   "location_name": "東陽染業",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "M62NEP キナリ",
+   "qty": 5,
+   "location_id": "merit_cut",
+   "location_name": "メリット　裁断",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "M62NEP キナリ",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "M62NEP シロ",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "Mアイボリー",
+   "qty": 8,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "Mアイボリー",
+   "qty": 8,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "ソーピング",
+   "qty": 10,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "ソーピング",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "ダスティピンク",
+   "qty": 8,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "ダスティピンク",
+   "qty": 12,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "チャコールグレー",
+   "qty": 8,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "ミルクベージュ",
+   "qty": 8,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "ミルクベージュ",
+   "qty": 10,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M62-36W",
+   "color": "杢オートミール",
+   "qty": 23,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M67",
+   "color": "アイボリー",
+   "qty": 10,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M67",
+   "color": "グレージュ（ココア）",
+   "qty": 14,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M67",
+   "color": "シルバーグレ(グレーブルー)",
+   "qty": 8,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M67",
+   "color": "チョコブラウン",
+   "qty": 3,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M67",
+   "color": "パープル",
+   "qty": 15,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M67",
+   "color": "ブラック",
+   "qty": 6,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "M67",
+   "color": "ミルキーピンク",
+   "qty": 8,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "グレージュ",
+   "qty": 3,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "グレージュ",
+   "qty": 8,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "ソーピング",
+   "qty": 7,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "ソーピング",
+   "qty": 7,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "チャコール",
+   "qty": 6,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "チャコール",
+   "qty": 3,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "ブラック",
+   "qty": 2,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "ブラック",
+   "qty": 2,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "ベビーピンク",
+   "qty": 2,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "ベビーピンク",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "ミストブルー",
+   "qty": 2,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "ミストブルー",
+   "qty": 6,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "モーヴピンク",
+   "qty": 1,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "ライトグレー",
+   "qty": 2,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "ライトグレー",
+   "qty": 2,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "ライトベージュ",
+   "qty": 2,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52",
+   "color": "ライトベージュ",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52NEP",
+   "color": "ソーピング",
+   "qty": 1,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52NEP",
+   "color": "ホワイト",
+   "qty": 2,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N-40/52NEP(棒反)",
+   "color": "ソーピング",
+   "qty": 8,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N20701",
+   "color": "MRJソーピング（アヒル柄）",
+   "qty": 3,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N20701",
+   "color": "MRJベビーピンク（アヒル柄）",
+   "qty": 3,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "N20701",
+   "color": "MRJライトベージュ（アヒル柄）",
+   "qty": 3,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "",
+   "qty": 20,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "P66NEP キナリ",
+   "qty": 12,
+   "location_id": "kakogawa_prison",
+   "location_name": "加古川刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "P66NEP ホワイト",
+   "qty": 12,
+   "location_id": "kakogawa_prison",
+   "location_name": "加古川刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "アイボリー",
+   "qty": 7,
+   "location_id": "kakogawa_prison",
+   "location_name": "加古川刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "アイボリー",
+   "qty": 5,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "アイボリー",
+   "qty": 5,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "アイボリー 起毛",
+   "qty": 16,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "オリーブ",
+   "qty": 5,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "オリーブ",
+   "qty": 7,
+   "location_id": "kakogawa_prison",
+   "location_name": "加古川刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "オリーブ",
+   "qty": 6,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "グレージュ",
+   "qty": 6,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "ダスティピンク",
+   "qty": 9,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "ダスティピンク",
+   "qty": 6,
+   "location_id": "kakogawa_prison",
+   "location_name": "加古川刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "ダスティピンク",
+   "qty": 5,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "チャコールグレー",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "チャコールグレー",
+   "qty": 6,
+   "location_id": "kakogawa_prison",
+   "location_name": "加古川刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "チョコレート",
+   "qty": 7,
+   "location_id": "kakogawa_prison",
+   "location_name": "加古川刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "チョコレート",
+   "qty": 5,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "ブラック",
+   "qty": 6,
+   "location_id": "kakogawa_prison",
+   "location_name": "加古川刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "ブラック",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "ミルクベージュ",
+   "qty": 7,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "ミルクベージュ",
+   "qty": 5,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": ""
+  },
+  {
+   "fabric_no": "P66",
+   "color": "ミルクベージュ",
+   "qty": 6,
+   "location_id": "kakogawa_prison",
+   "location_name": "加古川刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "R-40/52",
+   "color": "ソーピング",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "S42",
+   "color": "",
+   "qty": 32,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": ""
+  },
+  {
+   "fabric_no": "S42",
+   "color": "",
+   "qty": 80,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "S42",
+   "color": "チャコールグレー（ネック用）",
+   "qty": 0,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "S43",
+   "color": "アイボリー",
+   "qty": 16,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": "たたみ仕上げ"
+  },
+  {
+   "fabric_no": "S43",
+   "color": "スキンベージュ",
+   "qty": 8,
+   "location_id": "matsuda_dye",
+   "location_name": "松田染工",
+   "memo": "たたみ仕上げ"
+  },
+  {
+   "fabric_no": "S46-20W",
+   "color": "アイボリー",
+   "qty": 5,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "S46-20W",
+   "color": "スキンベージュ",
+   "qty": 3,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "S46-20W",
+   "color": "チャコール",
+   "qty": 3,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "S46-20W",
+   "color": "ブラック",
+   "qty": 1,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SD001",
+   "color": "インディゴブルー",
+   "qty": 7,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SD001",
+   "color": "インディゴブルー",
+   "qty": 4,
+   "location_id": "merit_cut",
+   "location_name": "メリット　裁断",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SD001",
+   "color": "ブラック",
+   "qty": 11,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SD001",
+   "color": "ライトブルー",
+   "qty": 5,
+   "location_id": "merit_cut",
+   "location_name": "メリット　裁断",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SD001",
+   "color": "ライトブルー",
+   "qty": 3,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SD001(棒反)",
+   "color": "インディゴブルー",
+   "qty": 1,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SD001(棒反)",
+   "color": "インディゴブルー",
+   "qty": 5,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SD001(棒反)",
+   "color": "インディゴブルー",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SD001(棒反)",
+   "color": "ライトブルー",
+   "qty": 5,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SD001(棒反)",
+   "color": "ライトブルー",
+   "qty": 6,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SD001(棒反)",
+   "color": "ライトブルー",
+   "qty": 1,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SD004",
+   "color": "ブラック",
+   "qty": 15,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SOC-40",
+   "color": "オリーブ",
+   "qty": 8,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SOC-40",
+   "color": "ダスティピンク",
+   "qty": 1,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "SOC-40",
+   "color": "チャコールグレー",
+   "qty": 6,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "ロベリア生地(LA4737)",
+   "color": "キナリ",
+   "qty": 0,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "ロベリア生地(LA4737)",
+   "color": "グレー系",
+   "qty": 1,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "ロベリア生地(LA4737)",
+   "color": "ベージュモク",
+   "qty": 1,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "ロベリア生地(LA4737)",
+   "color": "ホワイト系",
+   "qty": 4,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "ロベリア生地(LA4737)",
+   "color": "青系",
+   "qty": 1,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  },
+  {
+   "fabric_no": "ロベリア生地(LS1313)",
+   "color": "ピンク系",
+   "qty": 1,
+   "location_id": "elaic",
+   "location_name": "エルアイシー",
+   "memo": ""
+  }
+ ],
+ "products": [
+  {
+   "code": "2段フリルスタイ",
+   "name": "ソーピングｘ水色　キングGY9",
+   "qty": 1180,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製"
+  },
+  {
+   "code": "bib-mel",
+   "name": "つけ襟スタイ",
+   "qty": 120,
+   "location_id": "kakogawa_prison",
+   "location_name": "加古川刑務所"
+  },
+  {
+   "code": "mocchi",
+   "name": "もっちりシルク腹巻",
+   "qty": 100,
+   "location_id": "concept_sew",
+   "location_name": "コンセプト"
+  },
+  {
+   "code": "mocchi",
+   "name": "もっちりシルク腹巻",
+   "qty": 1500,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "mocchi-neck-new",
+   "name": "ネックウォーマー",
+   "qty": 900,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所"
+  },
+  {
+   "code": "mocchi-neck-new0299",
+   "name": "新もっちりシルクネックウォーマー チャコールグレー",
+   "qty": 1452,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "mocchi-pants",
+   "name": "もっちりシルクパンツ",
+   "qty": 100,
+   "location_id": "concept_sew",
+   "location_name": "コンセプト"
+  },
+  {
+   "code": "oga-shorts-long05ml",
+   "name": "本縫いショーツ丈長M-L",
+   "qty": 194,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "oga-shorts0501",
+   "name": "本縫いショーツM-L",
+   "qty": 240,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "oga-shorts0601",
+   "name": "本縫いショーツM-L",
+   "qty": 233,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "oga-shorts0602",
+   "name": "本縫いショーツL-LL",
+   "qty": 216,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "oga-shorts0701",
+   "name": "本縫いショーツML",
+   "qty": 240,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "oga-shorts0702",
+   "name": "本縫いショーツL-LL",
+   "qty": 225,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "oga-shorts0801",
+   "name": "本縫いショーツM-L",
+   "qty": 234,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "oga-shorts0802",
+   "name": "本縫いショーツL-LL",
+   "qty": 214,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "q-swacap",
+   "name": "スワドル",
+   "qty": 5,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製"
+  },
+  {
+   "code": "tubu-pampki",
+   "name": "つぶつぶサスペンダーブルマ",
+   "qty": 3,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "オーガニックグレー",
+   "name": "オーガニックグレー",
+   "qty": 7,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所"
+  },
+  {
+   "code": "かぼちゃパンツ　ブラック80",
+   "name": "かぼちゃパンツ　ブラック80",
+   "qty": 183,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "スワドル",
+   "name": "スワドル",
+   "qty": 360,
+   "location_id": "merit_sew",
+   "location_name": "メリット　縫製"
+  },
+  {
+   "code": "スワドル　K56",
+   "name": "スワドル　K56",
+   "qty": 50,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "スワドル　K56",
+   "name": "スワドル　K56",
+   "qty": 100,
+   "location_id": "soeing_itoh",
+   "location_name": "NEXIA(ネクシア)"
+  },
+  {
+   "code": "スワドル2　K55ボタン有",
+   "name": "スワドル2　K55ボタン有",
+   "qty": 50,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "スワドル2　K55ボタン有",
+   "name": "スワドル2　K55ボタン有",
+   "qty": 100,
+   "location_id": "soeing_itoh",
+   "location_name": "NEXIA(ネクシア)"
+  },
+  {
+   "code": "ソーピング",
+   "name": "ソーピング",
+   "qty": 7,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所"
+  },
+  {
+   "code": "ダスティピンク",
+   "name": "ダスティピンク",
+   "qty": 16,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所"
+  },
+  {
+   "code": "チャコール",
+   "name": "チャコール",
+   "qty": 23,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所"
+  },
+  {
+   "code": "チャコールグレー",
+   "name": "チャコールグレー",
+   "qty": 7,
+   "location_id": "himeji_prison",
+   "location_name": "姫路少年刑務所"
+  },
+  {
+   "code": "ベビーボンネット　K57",
+   "name": "ベビーボンネット　K57",
+   "qty": 200,
+   "location_id": "soeing_itoh",
+   "location_name": "NEXIA(ネクシア)"
+  },
+  {
+   "code": "ベビーボンネット　K57",
+   "name": "ベビーボンネット　K57",
+   "qty": 100,
+   "location_id": "kamikyo_cut",
+   "location_name": "神共ニット"
+  },
+  {
+   "code": "一分丈スパッツ",
+   "name": "チャコール",
+   "qty": 568,
+   "location_id": "soeing_itoh",
+   "location_name": "NEXIA(ネクシア)"
+  },
+  {
+   "code": "一分丈スパッツ100",
+   "name": "ダスティピンク",
+   "qty": 800,
+   "location_id": "soeing_itoh",
+   "location_name": "NEXIA(ネクシア)"
+  },
+  {
+   "code": "一分丈スパッツ110-120",
+   "name": "ブラック",
+   "qty": 454,
+   "location_id": "soeing_itoh",
+   "location_name": "NEXIA(ネクシア)"
+  },
+  {
+   "code": "一分丈スパッツ130-140",
+   "name": "ブラック",
+   "qty": 556,
+   "location_id": "soeing_itoh",
+   "location_name": "NEXIA(ネクシア)"
+  }
+ ],
+ "sakamoto": [
+  {
+   "name": "2120-1",
+   "qty": 0,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "2120-B",
+   "qty": 0,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "2120-G",
+   "qty": 0,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "2120-P",
+   "qty": 0,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "30G",
+   "qty": 32,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "32C",
+   "qty": 44,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "32CL",
+   "qty": 29,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "4040A30",
+   "qty": 50,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "4040A30-NEP",
+   "qty": 24,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "CP369-50C",
+   "qty": 32,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "EGE303P",
+   "qty": 13,
+   "unit": "反",
+   "memo": "60反編立予定"
+  },
+  {
+   "name": "EGE303Pカットマーク",
+   "qty": 0,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "F88",
+   "qty": 92,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "FF100-38S",
+   "qty": 5,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "FF100-41S",
+   "qty": 5,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "FPI40",
+   "qty": 0,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "G40",
+   "qty": 93,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "G44",
+   "qty": 0,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "G55-2376",
+   "qty": 94,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "G55-2376GR3",
+   "qty": 48,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "G55-2376GR6",
+   "qty": 26,
+   "unit": "反",
+   "memo": "稼働中"
+  },
+  {
+   "name": "G55NEP",
+   "qty": 34,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "M62-36W",
+   "qty": 153,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "M62-36WGR3",
+   "qty": 0,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "M62-36WGR6",
+   "qty": 0,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "M62-36WNEP",
+   "qty": 2,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "M67",
+   "qty": 90,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "P66",
+   "qty": 26,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "P66NEP",
+   "qty": 2,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "PK40",
+   "qty": 0,
+   "unit": "反",
+   "memo": "33反編立予定"
+  },
+  {
+   "name": "S42",
+   "qty": 13,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "S42L",
+   "qty": 0,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "S43",
+   "qty": 0,
+   "unit": "反",
+   "memo": "60反編立予定"
+  },
+  {
+   "name": "S46-20W",
+   "qty": 59,
+   "unit": "反",
+   "memo": ""
+  },
+  {
+   "name": "S46-28W",
+   "qty": 30,
+   "unit": "反",
+   "memo": ""
+  }
+ ]
+}
