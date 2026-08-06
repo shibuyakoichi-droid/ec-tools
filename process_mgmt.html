@@ -146,7 +146,8 @@ tr:hover td{background:#faf9f7}
         <option value="">場所: すべて</option>
       </select>
       <button class="btn sm" id="stale-btn" onclick="toggleStaleFilter()" title="最終更新から2ヶ月以上経過したものだけ表示">🟠 停滞中のみ</button>
-      <button class="btn sm" onclick="mergeDuplicates()" style="margin-left:auto;color:#888">重複をまとめる</button>
+      <button class="btn sm" onclick="exportAll()" style="margin-left:auto" title="生地・商品・坂本繊維在庫をまとめてCSVで保存">⬇ まとめてCSV</button>
+      <button class="btn sm" onclick="mergeDuplicates()" style="color:#888">重複をまとめる</button>
     </div>
 
     <!-- 生地セクション -->
@@ -155,6 +156,10 @@ tr:hover td{background:#faf9f7}
         <span class="badge badge-fabric">生地</span>
         編み〜染色の在処
         <span id="fabric-count" style="font-size:12px;font-weight:400;color:#aaa"></span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn sm" onclick="exportFabrics()" title="いま表示している生地の一覧をCSVで保存">⬇ 一覧CSV</button>
+        <button class="btn sm" onclick="exportFabricMatrix()" title="生地×拠点のクロス表。取引先に送る形と同じ">⬇ 拠点別マトリクス</button>
       </div>
     </div>
     <div class="table-wrap">
@@ -176,6 +181,7 @@ tr:hover td{background:#faf9f7}
         裁断〜実在庫の在処
         <span id="product-count" style="font-size:12px;font-weight:400;color:#aaa"></span>
       </div>
+      <button class="btn sm" onclick="exportProducts()" title="いま表示している商品の一覧をCSVで保存">⬇ 一覧CSV</button>
     </div>
     <div class="table-wrap">
       <table>
@@ -207,6 +213,7 @@ tr:hover td{background:#faf9f7}
         <option value="木梨">木梨さん</option>
         <option value="渋谷">渋谷</option>
       </select>
+      <button class="btn sm" onclick="exportLogs()" style="margin-left:auto">⬇ CSV</button>
     </div>
     <div class="table-wrap">
       <table>
@@ -226,7 +233,8 @@ tr:hover td{background:#faf9f7}
       <button class="btn sm" id="yarn-sup-河辺" onclick="setYarnSupplier('河辺')">河辺</button>
       <button class="btn sm" id="yarn-sup-坂本繊維" onclick="setYarnSupplier('坂本繊維')">坂本繊維</button>
       <span style="font-size:11px;color:#bbb;margin-left:8px" id="yarn-updated"></span>
-      <button class="btn sm primary" onclick="addYarnRow()" style="margin-left:auto">＋ 行追加</button>
+      <button class="btn sm" onclick="exportYarn()" style="margin-left:auto">⬇ CSV</button>
+      <button class="btn sm primary" onclick="addYarnRow()">＋ 行追加</button>
       <button class="btn sm" onclick="saveYarnChanges()" style="background:#0a6b50;color:#fff;border-color:#0a6b50" id="yarn-save-btn">💾 変更を保存</button>
     </div>
     <div class="table-wrap">
@@ -460,6 +468,7 @@ let locations=[], fabrics=[], products=[], logs=[], master=[];
 let showStaleOnly=false;
 let fabricSortDir=null; // null=デフォルト順, 'asc'=古い順, 'desc'=新しい順
 let productSortDir=null;
+let lastFabricRows=[], lastProductRows=[]; // いま画面に出ている行（CSV出力用）
 
 function toggleSort(type){
   if(type==='fabric'){
@@ -617,6 +626,7 @@ function renderFabrics(q,lf,staleOnly){
       return fabricSortDir==='asc'?(av<bv?-1:av>bv?1:0):(av>bv?-1:av<bv?1:0);
     });
   }
+  lastFabricRows=rows;
   document.getElementById('fabric-count').textContent=`${rows.length}件`;
   const tb=document.getElementById('fabric-tbody');
   if(!rows.length){
@@ -656,6 +666,7 @@ function renderProducts(q,lf,staleOnly){
       return productSortDir==='asc'?(av<bv?-1:av>bv?1:0):(av>bv?-1:av<bv?1:0);
     });
   }
+  lastProductRows=rows;
   document.getElementById('product-count').textContent=`${rows.length}件`;
   const tb=document.getElementById('product-tbody');
   if(!rows.length){
@@ -1208,6 +1219,121 @@ async function saveEdit(){
   document.getElementById('edit-overlay').classList.remove('open');
   showAlert(`更新しました：${summary}`,'ok');
   renderAll();
+}
+
+// ---- CSVダウンロード ----
+// Excelでそのまま開けるよう UTF-8 BOM 付き・CRLF で書き出す
+function csvCell(v){
+  const s=(v===null||v===undefined)?'':String(v);
+  return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+}
+function downloadCSV(filename,rows){
+  const csv=rows.map(r=>r.map(csvCell).join(',')).join('\r\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},0);
+}
+function stamp(){
+  const d=new Date();
+  return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+}
+function ymd(iso){
+  if(!iso)return '';
+  const d=new Date(iso);
+  return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
+}
+
+function fabricRowsCSV(){
+  const out=[['生地番号','カラー','数量(反)','現在地','工程','最終更新','メモ']];
+  lastFabricRows.forEach(f=>{
+    const l=loc(f.location_id);
+    out.push([f.fabric_no,f.color,f.qty,l.name,l.process,ymd(f.updated_at),f.memo||'']);
+  });
+  return out;
+}
+function productRowsCSV(){
+  const out=[['品番','商品名','数量(枚)','現在地','工程','最終更新']];
+  lastProductRows.forEach(p=>{
+    const l=loc(p.location_id);
+    out.push([p.code,p.name,p.qty,l.name,l.process,ymd(p.updated_at)]);
+  });
+  return out;
+}
+
+function exportFabrics(){
+  if(!lastFabricRows.length){showAlert('書き出す生地がありません','err');return;}
+  downloadCSV(`生地在処_${stamp()}.csv`,fabricRowsCSV());
+}
+function exportProducts(){
+  if(!lastProductRows.length){showAlert('書き出す商品がありません','err');return;}
+  downloadCSV(`商品在処_${stamp()}.csv`,productRowsCSV());
+}
+
+// 生地×拠点のクロス表。取引先に送っている在庫表と同じ形。
+function exportFabricMatrix(){
+  if(!lastFabricRows.length){showAlert('書き出す生地がありません','err');return;}
+  // 実際に在庫がある拠点だけを列にする（工程順→名前順）
+  const usedIds=[...new Set(lastFabricRows.map(f=>f.location_id))];
+  const cols=locations.filter(l=>usedIds.includes(l.id));
+  usedIds.filter(id=>!cols.some(c=>c.id===id)).forEach(id=>cols.push({id,name:loc(id).name}));
+
+  const keyOf=f=>`${f.fabric_no} ${f.color}`;
+  const order=[],cells={};
+  lastFabricRows.forEach(f=>{
+    const k=keyOf(f);
+    if(!cells[k]){cells[k]={};order.push({k,fabric_no:f.fabric_no,color:f.color});}
+    cells[k][f.location_id]=(cells[k][f.location_id]||0)+f.qty;
+  });
+
+  const out=[['生地番号','カラー',...cols.map(c=>c.name),'計(反)']];
+  order.forEach(o=>{
+    const vals=cols.map(c=>cells[o.k][c.id]||'');
+    const sum=cols.reduce((s,c)=>s+(cells[o.k][c.id]||0),0);
+    out.push([o.fabric_no,o.color,...vals,sum]);
+  });
+  const totals=cols.map(c=>lastFabricRows.filter(f=>f.location_id===c.id).reduce((s,f)=>s+f.qty,0));
+  out.push(['計','',...totals,totals.reduce((s,v)=>s+v,0)]);
+  downloadCSV(`生地在処_拠点別_${stamp()}.csv`,out);
+}
+
+function exportLogs(){
+  const tf=document.getElementById('log-type').value;
+  const sf=document.getElementById('log-staff').value;
+  const typeLabel={move_fabric:'生地の移動',move_product:'商品の移動',cut:'裁断',add_fabric:'生地を登録',add_product:'商品を登録',edit_fabric:'生地を編集',edit_product:'商品を編集'};
+  const rows=logs.filter(l=>(!tf||l.type===tf)&&(!sf||l.staff===sf));
+  if(!rows.length){showAlert('書き出すログがありません','err');return;}
+  const out=[['日時','操作','内容','担当','メモ']];
+  rows.forEach(l=>out.push([
+    new Date(l.logged_at).toLocaleString('ja-JP'),
+    typeLabel[l.type]||l.type,l.summary,l.staff||'',l.memo||''
+  ]));
+  downloadCSV(`操作ログ_${stamp()}.csv`,out);
+}
+
+function yarnRowsCSV(data,supplier){
+  const out=[['仕入先','種類','カラーNO','カラー名','在庫','加工中','単位','メモ','最終更新']];
+  data.forEach(r=>out.push([
+    supplier,r.yarn_type,r.color_no||'',r.color_name||'',
+    r.stock_kg||0,r.wip_kg||0,r.unit||'',r.notes||'',ymd(r.updated_at)
+  ]));
+  return out;
+}
+function exportYarn(){
+  if(!yarnData.length){showAlert('書き出すデータがありません','err');return;}
+  downloadCSV(`${yarnSupplier}_在庫_${stamp()}.csv`,yarnRowsCSV(yarnData,yarnSupplier));
+}
+
+// 生地・商品・坂本繊維在庫を一度に落とす
+async function exportAll(){
+  exportFabrics();
+  exportProducts();
+  const{data,error}=await sb.from('yarn_stock').select('*').eq('supplier','坂本繊維').order('color_name');
+  if(error||!data||!data.length){showAlert('坂本繊維の在庫が取得できませんでした','err');return;}
+  downloadCSV(`坂本繊維_在庫_${stamp()}.csv`,yarnRowsCSV(data,'坂本繊維'));
+  showAlert('生地・商品・坂本繊維在庫の3ファイルをダウンロードしました','ok');
 }
 
 init();
